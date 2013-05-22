@@ -8,7 +8,7 @@
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Name: tbb
 Version: %{dotver}
-Release: 3.%{releasedate}%{?dist}
+Release: 4.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group: Development/Tools
 URL: http://threadingbuildingblocks.org/
@@ -122,6 +122,10 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc %{source_5}
 
 %changelog
+* Wed May 22 2013 Petr Machata <pmachata@redhat.com> - 4.0-4.20120408
+- Fix mfence patch.  Since the __TBB_full_memory_fence macro was
+  function-call-like, it stole () intended for function invocation.
+
 * Thu Apr 05 2012 Karsten Hopp <karsten@redhat.com> 4.0-3.20110809
 - tbb builds now on PPC(64)
 
