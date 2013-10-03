@@ -10,7 +10,7 @@
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Name: tbb
 Version: %{dotver}
-Release: 8.%{releasedate}%{?dist}
+Release: 9.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group: Development/Tools
 URL: http://threadingbuildingblocks.org/
@@ -106,7 +106,7 @@ pushd build/obj_release
 popd
 
 pushd include
-    find tbb -type f -name \*.h -exec \
+    find tbb -type f ! -name \*.htm\* -exec \
         install -p -D -m 644 {} $RPM_BUILD_ROOT/%{_includedir}/{} \
     \;
 popd
@@ -143,6 +143,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc %{source_5}
 
 %changelog
+* Thu Oct  3 2013 Petr Machata <pmachata@redhat.com> - 4.0-9.20130314
+- Fix %%install to also install include files that are not named *.h
+
 * Wed May 22 2013 Petr Machata <pmachata@redhat.com> - 4.0-8.20120408
 - Fix mfence patch.  Since the __TBB_full_memory_fence macro was
   function-call-like, it stole () intended for function invocation.
