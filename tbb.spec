@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 8.%{releasedate}%{?dist}
+Release: 9.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -36,7 +36,7 @@ Patch2: tbb-4.0-mfence.patch
 Patch3: tbb-4.1-dont-snip-Wall.patch
 
 BuildRequires: libstdc++-devel
-ExclusiveArch: %{ix86} x86_64 ia64 ppc ppc64 %{arm} aarch64
+ExclusiveArch: %{ix86} x86_64 ia64 ppc ppc64 %{arm} aarch64 ppc64le
 
 %description
 Threading Building Blocks (TBB) is a C++ runtime library that
@@ -82,6 +82,11 @@ for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
         > $(basename ${file})
 done
 
+%check
+%ifarch ppc64le
+make test
+%endif
+
 %install
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}
 mkdir -p $RPM_BUILD_ROOT/%{_includedir}
@@ -123,6 +128,9 @@ done
 %doc doc/html
 
 %changelog
+* Thu Sep 25 2014 Karsten Hopp <karsten@redhat.com> 4.1-9.20130314
+- enable ppc64le and run 'make test' on that new arch
+
 * Mon Aug 18 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.1-8.20130314
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
