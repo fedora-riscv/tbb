@@ -1,7 +1,7 @@
-%define releasedate 20130314
+%define releasedate 20141204
 %define major 4
-%define minor 1
-%define update 3
+%define minor 3
+%define update 2
 %define dotver %{major}.%{minor}
 %define sourcebasename tbb%{major}%{minor}_%{releasedate}oss
 
@@ -10,12 +10,12 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 9.%{releasedate}%{?dist}
+Release: 1.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
 
-Source0: http://threadingbuildingblocks.org/sites/default/files/software_releases/source/tbb41_20130314oss_src.tgz
+Source0: http://threadingbuildingblocks.org/sites/default/files/software_releases/source/%{sourcebasename}_src.tgz
 # These two are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
@@ -33,10 +33,9 @@ Patch2: tbb-4.0-mfence.patch
 # Don't snip -Wall from C++ flags.  Add -fno-strict-aliasing, as that
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
-Patch3: tbb-4.1-dont-snip-Wall.patch
+Patch3: tbb-4.3-dont-snip-Wall.patch
 
 BuildRequires: libstdc++-devel
-ExclusiveArch: %{ix86} x86_64 ia64 ppc ppc64 %{arm} aarch64 ppc64le
 
 %description
 Threading Building Blocks (TBB) is a C++ runtime library that
@@ -128,6 +127,10 @@ done
 %doc doc/html
 
 %changelog
+* Mon Jan 19 2015 Petr Machata <pmachata@redhat.com> - 4.3-1.20141204
+- Rebase to 4.3u2
+- Drop ExclusiveArch
+
 * Thu Sep 25 2014 Karsten Hopp <karsten@redhat.com> 4.1-9.20130314
 - enable ppc64le and run 'make test' on that new arch
 

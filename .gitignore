@@ -10,3 +10,4 @@ tbb*/
 *.rpm
 /tbb41_20130314oss_src.tgz
 .*.log
+/tbb43_20141204oss_src.tgz
