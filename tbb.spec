@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 1.%{releasedate}%{?dist}
+Release: 2.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -127,6 +127,9 @@ done
 %doc doc/html
 
 %changelog
+* Sat May 02 2015 Kalev Lember <kalevlember@gmail.com> - 4.3-2.20141204
+- Rebuilt for GCC 5 C++11 ABI change
+
 * Mon Jan 19 2015 Petr Machata <pmachata@redhat.com> - 4.3-1.20141204
 - Rebase to 4.3u2
 - Drop ExclusiveArch
