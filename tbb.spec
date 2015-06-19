@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 2.%{releasedate}%{?dist}
+Release: 3.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -127,6 +127,9 @@ done
 %doc doc/html
 
 %changelog
+* Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.3-3.20141204
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Sat May 02 2015 Kalev Lember <kalevlember@gmail.com> - 4.3-2.20141204
 - Rebuilt for GCC 5 C++11 ABI change
 
