@@ -1,6 +1,6 @@
-%define releasedate 20141204
+%define releasedate 20151115
 %define major 4
-%define minor 3
+%define minor 4
 %define update 2
 %define dotver %{major}.%{minor}
 %define sourcebasename tbb%{major}%{minor}_%{releasedate}oss
@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 3.%{releasedate}%{?dist}
+Release: 1.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -22,12 +22,13 @@ Source7: tbbmalloc.pc
 Source8: tbbmalloc_proxy.pc
 
 # Propagate CXXFLAGS variable into flags used when compiling C++.
-# This so that RPM_OPT_FLAGS are respected.
-Patch1: tbb-3.0-cxxflags.patch
+# This is so that RPM_OPT_FLAGS are respected.
+Patch1: tbb-4.4-cxxflags.patch
 
-# Replace mfence with xchg (for 32-bit builds only) so that TBB
-# compiles and works supported hardware.  mfence was added with SSE2,
-# which we still don't assume.
+# For 32-bit x86 only, don't assume that the mfence instruction is available.
+# It was added with SSE2.  This patch causes a lock xchg instruction to be
+# emitted for non-SSE2 builds, and the mfence instruction to be emitted for
+# SSE2-enabled builds.
 Patch2: tbb-4.0-mfence.patch
 
 # Don't snip -Wall from C++ flags.  Add -fno-strict-aliasing, as that
@@ -62,6 +63,7 @@ Blocks (TBB) C++ libraries.
 %package doc
 Summary: The Threading Building Blocks documentation
 Group: Documentation
+Provides: bundled(jquery)
 
 %description doc
 PDF documentation for the user of the Threading Building Block (TBB)
@@ -74,21 +76,43 @@ C++ library.
 %patch2 -p1
 %patch3 -p1
 
+# For repeatable builds, don't query the hostname
+sed -i 's/`hostname -s`/fedorabuild/' build/version_info_linux.sh
+
 %build
-make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS" tbb_build_prefix=obj
+%ifarch %{ix86}
+# Build an SSE2-enabled version so the mfence instruction can be used
+cp -a build build.orig
+make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" \
+  tbb_build_prefix=obj cpp0x=1
+mv build build.sse2
+mv build.orig build
+%endif
+
+make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS" tbb_build_prefix=obj cpp0x=1
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
-    sed 's/_FEDORA_VERSION/%{major}.%{minor}.%{update}/' ${file} \
-        > $(basename ${file})
+    base=$(basename ${file})
+    sed 's/_FEDORA_VERSION/%{major}.%{minor}.%{update}/' ${file} > ${base}
+    touch -r ${file} ${base}
 done
 
 %check
 %ifarch ppc64le
-make test
+make test CXXFLAGS="$RPM_OPT_FLAGS" cpp0x=1
 %endif
 
 %install
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}
 mkdir -p $RPM_BUILD_ROOT/%{_includedir}
+
+%ifarch %{ix86}
+mkdir -p $RPM_BUILD_ROOT/%{_libdir}/sse2
+pushd build.sse2/obj_release
+    for file in libtbb{,malloc{,_proxy}}; do
+        install -p -D -m 755 ${file}.so.2 $RPM_BUILD_ROOT/%{_libdir}/sse2
+    done
+popd
+%endif
 
 pushd build/obj_release
     for file in libtbb{,malloc{,_proxy}}; do
@@ -115,6 +139,9 @@ done
 %files
 %doc COPYING doc/Release_Notes.txt
 %{_libdir}/*.so.2
+%ifarch %{ix86}
+%{_libdir}/sse2/*.so.2
+%endif
 
 %files devel
 %doc CHANGES
@@ -127,6 +154,13 @@ done
 %doc doc/html
 
 %changelog
+* Fri Jan 15 2016 Jerry James <loganjerry@gmail.com> - 4.4-1.20151115
+- Rebase to 4.4u2
+- Fix the mfence patch to actually emit a memory barrier (bz 1288314)
+- Build an sse2 version for i386 for better performance on capable CPUs
+- Enable use of C++0x features
+- Drop out-of-date CHANGES.txt from git
+
 * Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.3-3.20141204
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
