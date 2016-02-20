@@ -1,16 +1,16 @@
-%define releasedate 20151115
-%define major 4
-%define minor 4
-%define update 2
-%define dotver %{major}.%{minor}
-%define sourcebasename tbb%{major}%{minor}_%{releasedate}oss
+%global releasedate 20160128
+%global major 4
+%global minor 4
+%global update 3
+%global dotver %{major}.%{minor}
+%global sourcebasename tbb%{major}%{minor}_%{releasedate}oss
 
-%define sourcefilename %{sourcebasename}_src.tgz
+%global sourcefilename %{sourcebasename}_src.tgz
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 2.%{releasedate}%{?dist}
+Release: 3.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -36,7 +36,10 @@ Patch2: tbb-4.0-mfence.patch
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
 Patch3: tbb-4.3-dont-snip-Wall.patch
 
-BuildRequires: libstdc++-devel
+# Upstream: 20 Feb 2016.  Fix a min macro that clashes with std::min.
+Patch4: tbb-4.4-min.patch
+
+BuildRequires: gcc-c++
 
 %description
 Threading Building Blocks (TBB) is a C++ runtime library that
@@ -75,9 +78,11 @@ C++ library.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
-# For repeatable builds, don't query the hostname
-sed -i 's/`hostname -s`/fedorabuild/' build/version_info_linux.sh
+# For repeatable builds, don't query the hostname or architecture
+sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
+    build/version_info_linux.sh
 
 %build
 %ifarch %{ix86}
@@ -154,6 +159,9 @@ done
 %doc doc/html
 
 %changelog
+* Sat Feb 20 2016 Jerry James <loganjerry@gmail.com> - 4.4-3.20160128
+- Rebase to 4.4u3
+
 * Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 4.4-2.20151115
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
