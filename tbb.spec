@@ -1,4 +1,4 @@
-%global releasedate 20160128
+%global releasedate 20160316
 %global major 4
 %global minor 4
 %global update 3
@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 3.%{releasedate}%{?dist}
+Release: 4.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -35,9 +35,6 @@ Patch2: tbb-4.0-mfence.patch
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
 Patch3: tbb-4.3-dont-snip-Wall.patch
-
-# Upstream: 20 Feb 2016.  Fix a min macro that clashes with std::min.
-Patch4: tbb-4.4-min.patch
 
 BuildRequires: gcc-c++
 
@@ -78,7 +75,6 @@ C++ library.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 # For repeatable builds, don't query the hostname or architecture
 sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
@@ -89,12 +85,13 @@ sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
 # Build an SSE2-enabled version so the mfence instruction can be used
 cp -a build build.orig
 make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" \
-  tbb_build_prefix=obj cpp0x=1
+  LDFLAGS="$RPM_LD_FLAGS" tbb_build_prefix=obj cpp0x=1
 mv build build.sse2
 mv build.orig build
 %endif
 
-make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS" tbb_build_prefix=obj cpp0x=1
+make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS" \
+  tbb_build_prefix=obj cpp0x=1
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{major}.%{minor}.%{update}/' ${file} > ${base}
@@ -159,6 +156,10 @@ done
 %doc doc/html
 
 %changelog
+* Fri Mar 18 2016 Jerry James <loganjerry@gmail.com> - 4.4-4.20160316
+- Updated upstream tarball
+- Link with RPM_LD_FLAGS
+
 * Sat Feb 20 2016 Jerry James <loganjerry@gmail.com> - 4.4-3.20160128
 - Rebase to 4.4u3
 
