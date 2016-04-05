@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 4.%{releasedate}%{?dist}
+Release: 5.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -84,14 +84,16 @@ sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
 %ifarch %{ix86}
 # Build an SSE2-enabled version so the mfence instruction can be used
 cp -a build build.orig
-make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" \
-  LDFLAGS="$RPM_LD_FLAGS" tbb_build_prefix=obj cpp0x=1
+make %{?_smp_mflags} tbb_build_prefix=obj cpp0x=1 \
+  CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2 -fno-delete-null-pointer-checks" \
+  LDFLAGS="$RPM_LD_FLAGS"
 mv build build.sse2
 mv build.orig build
 %endif
 
-make %{?_smp_mflags} CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS" \
-  tbb_build_prefix=obj cpp0x=1
+make %{?_smp_mflags} tbb_build_prefix=obj cpp0x=1 \
+  CXXFLAGS="$RPM_OPT_FLAGS -fno-delete-null-pointer-checks" \
+  LDFLAGS="$RPM_LD_FLAGS"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{major}.%{minor}.%{update}/' ${file} > ${base}
@@ -100,7 +102,8 @@ done
 
 %check
 %ifarch ppc64le
-make test CXXFLAGS="$RPM_OPT_FLAGS" cpp0x=1
+make test tbb_build_prefix=obj cpp0x=1 \
+  CXXFLAGS="$RPM_OPT_FLAGS -fno-delete-null-pointer-checks"
 %endif
 
 %install
@@ -156,6 +159,9 @@ done
 %doc doc/html
 
 %changelog
+* Mon Apr  4 2016 Jerry James <loganjerry@gmail.com> - 4.4-5.20160316
+- Add -fno-delete-null-pointer-checks to fix optimized code
+
 * Fri Mar 18 2016 Jerry James <loganjerry@gmail.com> - 4.4-4.20160316
 - Updated upstream tarball
 - Link with RPM_LD_FLAGS
