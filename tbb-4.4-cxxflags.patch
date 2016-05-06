@@ -1,7 +1,7 @@
-diff -up tbb44_20151115oss/build/linux.gcc.inc\~ tbb44_20151115oss/build/linux.gcc.inc
---- tbb44_20151115oss/build/linux.gcc.inc~	2015-11-25 03:48:43.000000000 -0700
-+++ tbb44_20151115oss/build/linux.gcc.inc	2016-01-14 20:02:13.829449849 -0700
-@@ -54,10 +54,10 @@ ifneq (,$(shell gcc -dumpversion | egrep
+diff -up tbb44_20160413oss/build/linux.gcc.inc~ tbb44_20160413oss/build/linux.gcc.inc
+--- tbb44_20160413oss/build/linux.gcc.inc~	2016-04-14 08:47:01.000000000 -0600
++++ tbb44_20160413oss/build/linux.gcc.inc	2016-05-06 08:25:44.477787435 -0600
+@@ -50,10 +50,10 @@ ifneq (,$(shell gcc -dumpversion | egrep
  endif
  
  ifeq ($(cfg), release)
@@ -13,10 +13,10 @@ diff -up tbb44_20151115oss/build/linux.gcc.inc\~ tbb44_20151115oss/build/linux.g
 +        CPLUS_FLAGS = $(CXXFLAGS) -DTBB_USE_DEBUG $(ITT_NOTIFY) -g -O0 -DUSE_PTHREAD
  endif
  
- ifneq (00,$(lambdas)$(cpp0x))
-diff -up tbb44_20151115oss/build/Makefile.tbbmalloc\~ tbb44_20151115oss/build/Makefile.tbbmalloc
---- tbb44_20151115oss/build/Makefile.tbbmalloc~	2015-11-25 03:48:44.000000000 -0700
-+++ tbb44_20151115oss/build/Makefile.tbbmalloc	2016-01-14 20:20:49.514774850 -0700
+ TBB_ASM.OBJ=
+diff -up tbb44_20160413oss/build/Makefile.tbbmalloc~ tbb44_20160413oss/build/Makefile.tbbmalloc
+--- tbb44_20160413oss/build/Makefile.tbbmalloc~	2016-04-14 08:47:01.000000000 -0600
++++ tbb44_20160413oss/build/Makefile.tbbmalloc	2016-05-06 08:25:44.504785259 -0600
 @@ -51,7 +51,7 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
  MALLOC_CPLUS.OBJ = backend.$(OBJ) large_objects.$(OBJ) backref.$(OBJ)  tbbmalloc.$(OBJ)
  MALLOC.OBJ := $(MALLOC_CPLUS.OBJ) $(MALLOC_ASM.OBJ) itt_notify_malloc.$(OBJ) frontend.$(OBJ)
@@ -27,4 +27,4 @@ diff -up tbb44_20151115oss/build/Makefile.tbbmalloc\~ tbb44_20151115oss/build/Ma
  
  # Suppress superfluous warnings for TBBMalloc compilation
 
-Diff finished.  Thu Jan 14 20:22:27 2016
+Diff finished.  Fri May  6 08:25:55 2016

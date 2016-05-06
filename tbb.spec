@@ -1,7 +1,7 @@
-%global releasedate 20160316
+%global releasedate 20160413
 %global major 4
 %global minor 4
-%global update 3
+%global update 4
 %global dotver %{major}.%{minor}
 %global sourcebasename tbb%{major}%{minor}_%{releasedate}oss
 
@@ -10,7 +10,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 5.%{releasedate}%{?dist}
+Release: 6.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -159,6 +159,9 @@ done
 %doc doc/html
 
 %changelog
+* Fri May  6 2016 Jerry James <loganjerry@gmail.com> - 4.4-6.20160413
+- Rebase to 4.4u4
+
 * Mon Apr  4 2016 Jerry James <loganjerry@gmail.com> - 4.4-5.20160316
 - Add -fno-delete-null-pointer-checks to fix optimized code
 
