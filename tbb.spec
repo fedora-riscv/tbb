@@ -1,16 +1,20 @@
-%global releasedate 20160413
+%global releasedate 20160526
 %global major 4
 %global minor 4
-%global update 4
+%global update 5
 %global dotver %{major}.%{minor}
 %global sourcebasename tbb%{major}%{minor}_%{releasedate}oss
 
 %global sourcefilename %{sourcebasename}_src.tgz
 
+%if 0%{?fedora} || 0%{?rhel} >= 8
+%global with_python3 1
+%endif
+
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 6.%{releasedate}%{?dist}
+Release: 7.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -37,6 +41,12 @@ Patch2: tbb-4.0-mfence.patch
 Patch3: tbb-4.3-dont-snip-Wall.patch
 
 BuildRequires: gcc-c++
+BuildRequires: python2-devel
+BuildRequires: swig
+
+%if 0%{?with_python3}
+BuildRequires: python3-devel
+%endif
 
 %description
 Threading Building Blocks (TBB) is a C++ runtime library that
@@ -70,6 +80,24 @@ PDF documentation for the user of the Threading Building Block (TBB)
 C++ library.
 
 
+%package -n python2-%{name}
+Summary: Python 2 TBB module
+%{?python_provide:%python_provide python2-%{name}}
+
+%description -n python2-%{name}
+Python 2 TBB module.
+
+
+%if 0%{?with_python3}
+%package -n python3-%{name}
+Summary: Python 3 TBB module
+%{?python_provide:%python_provide python3-%{name}}
+
+%description -n python3-%{name}
+Python 3 TBB module.
+%endif
+
+
 %prep
 %setup -q -n %{sourcebasename}
 %patch1 -p1
@@ -80,18 +108,21 @@ C++ library.
 sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
     build/version_info_linux.sh
 
+# Prepare to build the python module for both python 2 and python 3
+cp -a python python3
+
 %build
 %ifarch %{ix86}
 # Build an SSE2-enabled version so the mfence instruction can be used
 cp -a build build.orig
-make %{?_smp_mflags} tbb_build_prefix=obj cpp0x=1 \
+make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
   CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2 -fno-delete-null-pointer-checks" \
   LDFLAGS="$RPM_LD_FLAGS"
 mv build build.sse2
 mv build.orig build
 %endif
 
-make %{?_smp_mflags} tbb_build_prefix=obj cpp0x=1 \
+make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
   CXXFLAGS="$RPM_OPT_FLAGS -fno-delete-null-pointer-checks" \
   LDFLAGS="$RPM_LD_FLAGS"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
@@ -100,9 +131,23 @@ for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     touch -r ${file} ${base}
 done
 
+# Build for python 2
+. build/obj_release/tbbvars.sh
+pushd python
+%py2_build
+popd
+
+%if 0%{?with_python3}
+# Build for python 3
+pushd python3
+%py3_build
+popd
+%endif
+
+
 %check
 %ifarch ppc64le
-make test tbb_build_prefix=obj cpp0x=1 \
+make test tbb_build_prefix=obj stdver=c++14 \
   CXXFLAGS="$RPM_OPT_FLAGS -fno-delete-null-pointer-checks"
 %endif
 
@@ -134,8 +179,21 @@ popd
 
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     install -p -D -m 644 $(basename ${file}) \
-	$RPM_BUILD_ROOT/%{_libdir}/pkgconfig/$(basename ${file})
+        $RPM_BUILD_ROOT/%{_libdir}/pkgconfig/$(basename ${file})
 done
+
+# Python 2 install
+. build/obj_release/tbbvars.sh
+pushd python
+%py2_install
+popd
+
+%if 0%{?with_python3}
+# Python 3 install
+pushd python3
+%py3_install
+popd
+%endif
 
 %post -p /sbin/ldconfig
 
@@ -158,7 +216,25 @@ done
 %doc doc/Release_Notes.txt
 %doc doc/html
 
+%files -n python2-%{name}
+%doc python/index.html
+%{python2_sitearch}/TBB*
+%{python2_sitearch}/_TBB.so
+
+%if 0%{?with_python3}
+%files -n python3-%{name}
+%doc python3/index.html
+%{python3_sitearch}/TBB*
+%{python3_sitearch}/_TBB.*.so
+%{python3_sitearch}/__pycache__/TBB*
+%endif
+
 %changelog
+* Wed Jun  1 2016 Jerry James <loganjerry@gmail.com> - 4.4-7.20160526
+- Rebase to 4.4u5
+- Build in C++14 mode
+- Build the new python module
+
 * Fri May  6 2016 Jerry James <loganjerry@gmail.com> - 4.4-6.20160413
 - Rebase to 4.4u4
 
