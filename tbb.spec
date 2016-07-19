@@ -14,7 +14,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{dotver}
-Release: 7.%{releasedate}%{?dist}
+Release: 8.%{releasedate}%{?dist}
 License: GPLv2 with exceptions
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -230,6 +230,9 @@ popd
 %endif
 
 %changelog
+* Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.4-8.20160526
+- https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
+
 * Wed Jun  1 2016 Jerry James <loganjerry@gmail.com> - 4.4-7.20160526
 - Rebase to 4.4u5
 - Build in C++14 mode
