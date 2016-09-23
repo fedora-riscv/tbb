@@ -1,11 +1,4 @@
-%global releasedate 20160526
-%global major 4
-%global minor 4
-%global update 5
-%global dotver %{major}.%{minor}
-%global sourcebasename tbb%{major}%{minor}_%{releasedate}oss
-
-%global sourcefilename %{sourcebasename}_src.tgz
+%global releasedate 20160722
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -13,14 +6,16 @@
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: %{dotver}
-Release: 8.%{releasedate}%{?dist}
-License: GPLv2 with exceptions
+Version: 2017
+Release: 1.%{releasedate}%{?dist}
+License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
 
-Source0: http://threadingbuildingblocks.org/sites/default/files/software_releases/source/%{sourcebasename}_src.tgz
-# These two are downstream sources.
+%global sourcever %{version}_%{releasedate}oss
+
+Source0: https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/%{name}%{sourcever}_src.tgz
+# These three are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
 Source8: tbbmalloc_proxy.pc
@@ -99,7 +94,7 @@ Python 3 TBB module.
 
 
 %prep
-%setup -q -n %{sourcebasename}
+%setup -q -n %{name}%{sourcever}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -116,18 +111,16 @@ cp -a python python3
 # Build an SSE2-enabled version so the mfence instruction can be used
 cp -a build build.orig
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2 -fno-delete-null-pointer-checks" \
-  LDFLAGS="$RPM_LD_FLAGS"
+  CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" LDFLAGS="$RPM_LD_FLAGS"
 mv build build.sse2
 mv build.orig build
 %endif
 
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS -fno-delete-null-pointer-checks" \
-  LDFLAGS="$RPM_LD_FLAGS"
+  CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
-    sed 's/_FEDORA_VERSION/%{major}.%{minor}.%{update}/' ${file} > ${base}
+    sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
     touch -r ${file} ${base}
 done
 
@@ -147,8 +140,7 @@ popd
 
 %check
 %ifarch ppc64le
-make test tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS -fno-delete-null-pointer-checks"
+make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="$RPM_OPT_FLAGS"
 %endif
 
 %install
@@ -200,7 +192,7 @@ popd
 %postun -p /sbin/ldconfig
 
 %files
-%doc COPYING doc/Release_Notes.txt
+%doc LICENSE doc/Release_Notes.txt
 %{_libdir}/*.so.2
 %ifarch %{ix86}
 %{_libdir}/sse2/*.so.2
@@ -230,6 +222,9 @@ popd
 %endif
 
 %changelog
+* Thu Sep 22 2016 Jerry James <loganjerry@gmail.com> - 2017-1.20160722
+- Rebase to 2017, new upstream version numbering scheme
+
 * Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 4.4-8.20160526
 - https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
 
