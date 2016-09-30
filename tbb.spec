@@ -1,4 +1,4 @@
-%global releasedate 20160722
+%global releasedate 20160916
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -7,7 +7,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2017
-Release: 1.%{releasedate}%{?dist}
+Release: 2.%{releasedate}%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -222,6 +222,9 @@ popd
 %endif
 
 %changelog
+* Fri Sep 30 2016 Jerry James <loganjerry@gmail.com> - 2017-2.20160916
+- New upstream release
+
 * Thu Sep 22 2016 Jerry James <loganjerry@gmail.com> - 2017-1.20160722
 - Rebase to 2017, new upstream version numbering scheme
 
