@@ -1,4 +1,4 @@
-%global releasedate 20160916
+%global releasedate 20161004
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -7,7 +7,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2017
-Release: 3.%{releasedate}%{?dist}
+Release: 4.%{releasedate}%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -228,6 +228,9 @@ popd
 %endif
 
 %changelog
+* Wed Nov  2 2016 Jerry James <loganjerry@gmail.com> - 2017-4.20161004
+- Rebase to 2017 update 2
+
 * Fri Oct 07 2016 Dan Horák <dan[at]danny.cz> - 2017-3.20160916
 - Fix detection of s390x as 64-bit arch (#1379632)
 
