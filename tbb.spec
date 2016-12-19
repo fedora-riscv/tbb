@@ -7,7 +7,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2017
-Release: 5.%{releasedate}%{?dist}
+Release: 6.%{releasedate}%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -222,6 +222,9 @@ popd
 %endif
 
 %changelog
+* Mon Dec 19 2016 Miro Hrončok <mhroncok@redhat.com> - 2017-6.20161128
+- Rebuild for Python 3.6
+
 * Fri Dec  2 2016 Jerry James <loganjerry@gmail.com> - 2017-5.20161128
 - Rebase to 2017 update 3
 - Drop upstreamed s390x patch
