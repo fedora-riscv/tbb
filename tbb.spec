@@ -7,7 +7,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2017
-Release: 6.%{releasedate}%{?dist}
+Release: 7.%{releasedate}%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -34,6 +34,12 @@ Patch2: tbb-4.0-mfence.patch
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
 Patch3: tbb-4.3-dont-snip-Wall.patch
+
+# Fix detection of s390x as 64-bit arch, it affects the version script used
+# for symbols in the public library
+# Related: https://bugzilla.redhat.com/show_bug.cgi?id=1379632
+# Upstream report: https://github.com/01org/tbb/issues/9
+Patch4: tbb-2017-64bit.patch
 
 BuildRequires: gcc-c++
 BuildRequires: python2-devel
@@ -98,6 +104,7 @@ Python 3 TBB module.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 # For repeatable builds, don't query the hostname or architecture
 sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
@@ -222,6 +229,9 @@ popd
 %endif
 
 %changelog
+* Mon Jan 02 2017 Dan Horák <dan[at]danny.cz> - 2017-7.20161128
+- Fix detection of s390x as 64-bit arch (#1379632)
+
 * Mon Dec 19 2016 Miro Hrončok <mhroncok@redhat.com> - 2017-6.20161128
 - Rebuild for Python 3.6
 
