@@ -6,3 +6,4 @@ tbb*/
 *.rpm
 .*.log
 /tbb*.tgz
+/*.tar.gz

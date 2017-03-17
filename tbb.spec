@@ -1,4 +1,5 @@
-%global releasedate 20161128
+%global upver 2017
+%global uprel 5
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -6,15 +7,13 @@
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: 2017
-Release: 8.%{releasedate}%{?dist}
+Version: %{upver}.%{uprel}
+Release: 1%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
 
-%global sourcever %{version}_%{releasedate}oss
-
-Source0: https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/%{name}%{sourcever}_src.tgz
+Source0: https://github.com/01org/tbb/archive/%{upver}_U%{uprel}.tar.gz
 # These three are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
@@ -34,12 +33,6 @@ Patch2: tbb-4.0-mfence.patch
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
 Patch3: tbb-4.3-dont-snip-Wall.patch
-
-# Fix detection of s390x as 64-bit arch, it affects the version script used
-# for symbols in the public library
-# Related: https://bugzilla.redhat.com/show_bug.cgi?id=1379632
-# Upstream report: https://github.com/01org/tbb/issues/9
-Patch4: tbb-2017-64bit.patch
 
 BuildRequires: gcc-c++
 BuildRequires: python2-devel
@@ -100,14 +93,13 @@ Python 3 TBB module.
 
 
 %prep
-%setup -q -n %{name}%{sourcever}
+%setup -q -n %{name}-%{upver}_U%{uprel}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 # For repeatable builds, don't query the hostname or architecture
-sed -i 's/`hostname -s`" ("`uname -m`/fedorabuild" ("%{_arch}/' \
+sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
 # Prepare to build the python module for both python 2 and python 3
@@ -229,6 +221,12 @@ popd
 %endif
 
 %changelog
+* Fri Mar 17 2017 Jerry James <loganjerry@gmail.com> - 2017.5-1%{?dist}
+- Rebase to 2017 update 5
+- Change version scheme again to match upstream's change
+- New source URL on github
+- Drop upstreamed patch to fix detection of s390x as 64-bit arch
+
 * Sat Feb 11 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017-8.20161128
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_26_Mass_Rebuild
 
