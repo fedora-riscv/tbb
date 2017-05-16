@@ -1,5 +1,5 @@
 %global upver 2017
-%global uprel 5
+%global uprel 6
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -221,6 +221,9 @@ popd
 %endif
 
 %changelog
+* Tue May 16 2017 Jerry James <loganjerry@gmail.com> - 2017.%{uprel}-1
+- Rebase to 2017 update 6
+
 * Fri Mar 17 2017 Jerry James <loganjerry@gmail.com> - 2017.5-1%{?dist}
 - Rebase to 2017 update 5
 - Change version scheme again to match upstream's change
