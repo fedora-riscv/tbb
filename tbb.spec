@@ -1,5 +1,5 @@
 %global upver 2017
-%global uprel 6
+%global uprel 7
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -102,6 +102,13 @@ Python 3 TBB module.
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
+# Fix libdir on 64-bit systems
+if [ "%{_libdir}" != "%{_prefix}/lib" ]; then
+  sed -i.orig 's/"lib"/"%{_lib}"/' cmake/TBBMakeConfig.cmake
+  touch -r cmake/TBBMakeConfig.cmake.orig cmake/TBBMakeConfig.cmake
+  rm cmake/TBBMakeConfig.cmake.orig
+fi
+
 # Prepare to build the python module for both python 2 and python 3
 cp -a python python3
 
@@ -186,21 +193,28 @@ pushd python3
 popd
 %endif
 
+# Install the cmake files
+mkdir -p $RPM_BUILD_ROOT%{_libdir}/cmake
+cp -a cmake $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}
+rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
 
 %files
-%doc LICENSE doc/Release_Notes.txt
+%doc doc/Release_Notes.txt README.md
+%license LICENSE
 %{_libdir}/*.so.2
 %ifarch %{ix86}
 %{_libdir}/sse2/*.so.2
 %endif
 
 %files devel
-%doc CHANGES
+%doc CHANGES cmake/README.rst
 %{_includedir}/tbb
 %{_libdir}/*.so
+%{_libdir}/cmake/
 %{_libdir}/pkgconfig/*.pc
 
 %files doc
@@ -221,6 +235,11 @@ popd
 %endif
 
 %changelog
+* Thu Jun  8 2017 Jerry James <loganjerry@gmail.com> - 2017.%{uprel}-1
+- Rebase to 2017 update 7
+- Use the license macro
+- Ship the new cmake files in -devel
+
 * Tue May 16 2017 Jerry James <loganjerry@gmail.com> - 2017.%{uprel}-1
 - Rebase to 2017 update 6
 
