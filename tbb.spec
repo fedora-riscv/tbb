@@ -8,7 +8,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}.%{uprel}
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -235,6 +235,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Thu Jun  8 2017 Jerry James <loganjerry@gmail.com> - 2017.%{uprel}-1
 - Rebase to 2017 update 7
 - Use the license macro
