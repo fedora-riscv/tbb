@@ -1,5 +1,5 @@
-%global upver 2017
-%global uprel 7
+%global upver 2018
+%global uprel 1
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -7,13 +7,13 @@
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: %{upver}.%{uprel}
-Release: 3%{?dist}
+Version: %{upver}%{?uprel:.%{uprel}}
+Release: 1%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
 
-Source0: https://github.com/01org/tbb/archive/%{upver}_U%{uprel}.tar.gz
+Source0: https://github.com/01org/tbb/archive/%{upver}%{?uprel:_U%{uprel}}.tar.gz
 # These three are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
@@ -235,21 +235,24 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Sat Nov 25 2017 Jerry James <loganjerry@gmail.com> - 2018.1-1
+- Rebase to 2018 update 1
+
 * Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
 
 * Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
-* Thu Jun  8 2017 Jerry James <loganjerry@gmail.com> - 2017.%{uprel}-1
+* Thu Jun  8 2017 Jerry James <loganjerry@gmail.com> - 2017.7-1
 - Rebase to 2017 update 7
 - Use the license macro
 - Ship the new cmake files in -devel
 
-* Tue May 16 2017 Jerry James <loganjerry@gmail.com> - 2017.%{uprel}-1
+* Tue May 16 2017 Jerry James <loganjerry@gmail.com> - 2017.6-1
 - Rebase to 2017 update 6
 
-* Fri Mar 17 2017 Jerry James <loganjerry@gmail.com> - 2017.5-1%{?dist}
+* Fri Mar 17 2017 Jerry James <loganjerry@gmail.com> - 2017.5-1
 - Rebase to 2017 update 5
 - Change version scheme again to match upstream's change
 - New source URL on github
