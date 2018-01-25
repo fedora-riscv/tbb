@@ -1,5 +1,5 @@
 %global upver 2018
-%global uprel 1
+%global uprel 2
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -111,19 +111,21 @@ fi
 
 # Prepare to build the python module for both python 2 and python 3
 cp -a python python3
+sed -i 's,python,python3,g' python3/Makefile python3/rml/Makefile
 
 %build
 %ifarch %{ix86}
 # Build an SSE2-enabled version so the mfence instruction can be used
 cp -a build build.orig
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" LDFLAGS="$RPM_LD_FLAGS"
+  CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" \
+  LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS"
 mv build build.sse2
 mv build.orig build
 %endif
 
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS"
+  CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
@@ -133,12 +135,16 @@ done
 # Build for python 2
 . build/obj_release/tbbvars.sh
 pushd python
+make %{?_smp_mflags} -C rml
+cp -p rml/libirml.so* .
 %py2_build
 popd
 
 %if 0%{?with_python3}
 # Build for python 3
 pushd python3
+make %{?_smp_mflags} -C rml
+cp -p rml/libirml.so* .
 %py3_build
 popd
 %endif
@@ -224,17 +230,20 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %files -n python2-%{name}
 %doc python/index.html
 %{python2_sitearch}/TBB*
-%{python2_sitearch}/_TBB.so
+%{python2_sitearch}/tbb/
 
 %if 0%{?with_python3}
 %files -n python3-%{name}
 %doc python3/index.html
 %{python3_sitearch}/TBB*
-%{python3_sitearch}/_TBB.*.so
+%{python3_sitearch}/tbb/
 %{python3_sitearch}/__pycache__/TBB*
 %endif
 
 %changelog
+* Wed Jan 24 2018 Jerry James <loganjerry@gmail.com> - 2018.2-1
+- Rebase to 2018 update 2
+
 * Sat Nov 25 2017 Jerry James <loganjerry@gmail.com> - 2018.1-1
 - Rebase to 2018 update 1
 

@@ -1,6 +1,6 @@
-diff -up tbb2017_20160722oss/build/linux.gcc.inc~ tbb2017_20160722oss/build/linux.gcc.inc
---- tbb2017_20160722oss/build/linux.gcc.inc.orig	2016-08-17 06:57:29.000000000 -0600
-+++ tbb2017_20160722oss/build/linux.gcc.inc	2016-09-08 15:02:27.054318551 -0600
+diff -up tbb-2018_U2/build/linux.gcc.inc\~ tbb-2018_U2/build/linux.gcc.inc
+--- tbb-2018_U2/build/linux.gcc.inc~	2017-12-06 10:29:49.000000000 -0700
++++ tbb-2018_U2/build/linux.gcc.inc	2018-01-22 20:47:07.148422967 -0700
 @@ -68,10 +68,10 @@ ifneq (,$(shell gcc -dumpversion | egrep
  endif
  
@@ -14,9 +14,9 @@ diff -up tbb2017_20160722oss/build/linux.gcc.inc~ tbb2017_20160722oss/build/linu
  endif
  
  TBB_ASM.OBJ=
-diff -up tbb2017_20160722oss/build/Makefile.tbbmalloc~ tbb2017_20160722oss/build/Makefile.tbbmalloc
---- tbb2017_20160722oss/build/Makefile.tbbmalloc.orig	2016-08-17 06:57:29.000000000 -0600
-+++ tbb2017_20160722oss/build/Makefile.tbbmalloc	2016-09-08 15:02:27.060318066 -0600
+diff -up tbb-2018_U2/build/Makefile.tbbmalloc\~ tbb-2018_U2/build/Makefile.tbbmalloc
+--- tbb-2018_U2/build/Makefile.tbbmalloc~	2017-12-06 10:29:49.000000000 -0700
++++ tbb-2018_U2/build/Makefile.tbbmalloc	2018-01-22 20:47:30.104350662 -0700
 @@ -51,7 +51,7 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
  MALLOC_CPLUS.OBJ = backend.$(OBJ) large_objects.$(OBJ) backref.$(OBJ)  tbbmalloc.$(OBJ)
  MALLOC.OBJ := $(MALLOC_CPLUS.OBJ) $(MALLOC_ASM.OBJ) itt_notify_malloc.$(OBJ) frontend.$(OBJ)
@@ -26,5 +26,12 @@ diff -up tbb2017_20160722oss/build/Makefile.tbbmalloc~ tbb2017_20160722oss/build
  M_INCLUDES := $(INCLUDES) $(INCLUDE_KEY)$(MALLOC_ROOT) $(INCLUDE_KEY)$(MALLOC_SOURCE_ROOT)
  
  # Suppress superfluous warnings for TBBMalloc compilation
-
-Diff finished.  Thu Sep  8 15:02:28 2016
+@@ -86,7 +86,7 @@ $(MALLOC.DLL) $(MALLOCPROXY.DLL): CPLUS_
+ $(MALLOC.DLL) $(MALLOCPROXY.DLL): M_CPLUS_FLAGS += $(SDL_FLAGS)
+ $(MALLOC.DLL): BUILDING_LIBRARY = $(MALLOC.DLL)
+ $(MALLOC.DLL): $(MALLOC.OBJ) $(MALLOC.RES) $(MALLOC_NO_VERSION.DLL)
+-	$(subst $(CPLUS),$(CONLY),$(LIB_LINK_CMD)) $(LIB_OUTPUT_KEY)$(MALLOC.DLL) $(MALLOC.OBJ) $(MALLOC.RES) $(LIB_LINK_LIBS) $(MALLOC_LINK_FLAGS)
++	$(LIB_LINK_CMD) $(LIB_OUTPUT_KEY)$(MALLOC.DLL) $(MALLOC.OBJ) $(MALLOC.RES) $(LIB_LINK_LIBS) $(MALLOC_LINK_FLAGS)
+ 
+ ifneq (,$(MALLOCPROXY.DEF))
+ tbbmallocproxy.def: $(MALLOCPROXY.DEF)
