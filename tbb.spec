@@ -8,7 +8,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -102,6 +102,12 @@ Python 3 TBB module.
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
+# Invoke the right python binary directly
+sed -i 's,env python,python2,' python/TBB.py python/tbb/__*.py
+
+# Remove shebang from files that don't need it
+sed -i '/^#!/d' python/tbb/{pool,test}.py
+
 # Fix libdir on 64-bit systems
 if [ "%{_libdir}" != "%{_prefix}/lib" ]; then
   sed -i.orig 's/"lib"/"%{_lib}"/' cmake/TBBMakeConfig.cmake
@@ -112,6 +118,7 @@ fi
 # Prepare to build the python module for both python 2 and python 3
 cp -a python python3
 sed -i 's,python,python3,g' python3/Makefile python3/rml/Makefile
+sed -i 's,python2,python3,' python/TBB.py python/tbb/__*.py
 
 %build
 %ifarch %{ix86}
@@ -135,7 +142,7 @@ done
 # Build for python 2
 . build/obj_release/tbbvars.sh
 pushd python
-make %{?_smp_mflags} -C rml
+make %{?_smp_mflags} -C rml stdver=c++14
 cp -p rml/libirml.so* .
 %py2_build
 popd
@@ -143,7 +150,7 @@ popd
 %if 0%{?with_python3}
 # Build for python 3
 pushd python3
-make %{?_smp_mflags} -C rml
+make %{?_smp_mflags} -C rml stdver=c++14
 cp -p rml/libirml.so* .
 %py3_build
 popd
@@ -186,16 +193,27 @@ for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
         $RPM_BUILD_ROOT/%{_libdir}/pkgconfig/$(basename ${file})
 done
 
+# Install the rml headers
+mkdir -p $RPM_BUILD_ROOT%{_includedir}/rml
+cp -p src/rml/include/*.h $RPM_BUILD_ROOT%{_includedir}/rml
+
 # Python 2 install
 . build/obj_release/tbbvars.sh
 pushd python
 %py2_install
+chmod a+x $RPM_BUILD_ROOT%{python2_sitearch}/TBB.py
+chmod a+x $RPM_BUILD_ROOT%{python2_sitearch}/tbb/__*.py
+cp -p libirml.so.1 $RPM_BUILD_ROOT%{_libdir}
+ln -s libirml.so.1 $RPM_BUILD_ROOT%{_libdir}/libirml.so
 popd
 
 %if 0%{?with_python3}
 # Python 3 install
 pushd python3
 %py3_install
+chmod a+x $RPM_BUILD_ROOT%{python3_sitearch}/TBB.py
+chmod a+x $RPM_BUILD_ROOT%{python3_sitearch}/tbb/__*.py
+cp -p libirml.so.1 $RPM_BUILD_ROOT%{_libdir}
 popd
 %endif
 
@@ -212,12 +230,14 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %doc doc/Release_Notes.txt README.md
 %license LICENSE
 %{_libdir}/*.so.2
+%{_libdir}/libirml.so.1
 %ifarch %{ix86}
 %{_libdir}/sse2/*.so.2
 %endif
 
 %files devel
 %doc CHANGES cmake/README.rst
+%{_includedir}/rml
 %{_includedir}/tbb
 %{_libdir}/*.so
 %{_libdir}/cmake/
@@ -241,6 +261,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Fri Jan 26 2018 Jerry James <loganjerry@gmail.com> - 2018.2-2
+- Install libirml for the python interfaces
+
 * Wed Jan 24 2018 Jerry James <loganjerry@gmail.com> - 2018.2-1
 - Rebase to 2018 update 2
 
