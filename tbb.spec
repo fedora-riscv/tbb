@@ -8,7 +8,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -118,7 +118,7 @@ fi
 # Prepare to build the python module for both python 2 and python 3
 cp -a python python3
 sed -i 's,python,python3,g' python3/Makefile python3/rml/Makefile
-sed -i 's,python2,python3,' python/TBB.py python/tbb/__*.py
+sed -i 's,python2,python3,' python3/TBB.py python3/tbb/__*.py
 
 %build
 %ifarch %{ix86}
@@ -261,6 +261,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Mon Jan 29 2018 Iryna Shcherbina <ishcherb@redhat.com> - 2018.2-3
+- Fix Python 2 dependency from python3-tbb
+
 * Fri Jan 26 2018 Jerry James <loganjerry@gmail.com> - 2018.2-2
 - Install libirml for the python interfaces
 
