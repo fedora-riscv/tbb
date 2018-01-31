@@ -8,7 +8,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -102,6 +102,9 @@ Python 3 TBB module.
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
+# Do not assume the RTM instructions are available
+sed -i 's/-mrtm//' build/linux.gcc.inc
+
 # Invoke the right python binary directly
 sed -i 's,env python,python2,' python/TBB.py python/tbb/__*.py
 
@@ -132,7 +135,8 @@ mv build.orig build
 %endif
 
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS"
+  CXXFLAGS="$RPM_OPT_FLAGS" \
+  LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
@@ -142,7 +146,10 @@ done
 # Build for python 2
 . build/obj_release/tbbvars.sh
 pushd python
-make %{?_smp_mflags} -C rml stdver=c++14
+make %{?_smp_mflags} -C rml stdver=c++14 \
+  CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
+  PIC_KEY="-fPIC -Wl,--as-needed" \
+  LDFLAGS="$RPM_LD_FLAGS"
 cp -p rml/libirml.so* .
 %py2_build
 popd
@@ -150,7 +157,10 @@ popd
 %if 0%{?with_python3}
 # Build for python 3
 pushd python3
-make %{?_smp_mflags} -C rml stdver=c++14
+make %{?_smp_mflags} -C rml stdver=c++14 \
+  CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
+  PIC_KEY="-fPIC -Wl,--as-needed" \
+  LDFLAGS="$RPM_LD_FLAGS"
 cp -p rml/libirml.so* .
 %py3_build
 popd
@@ -261,6 +271,10 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Tue Jan 30 2018 Jerry James <loganjerry@gmail.com> - 2018.2-4
+- Build libirml with the correct flags (bz 1540268)
+- Do not build with -mrtm
+
 * Mon Jan 29 2018 Iryna Shcherbina <ishcherb@redhat.com> - 2018.2-3
 - Fix Python 2 dependency from python3-tbb
 
