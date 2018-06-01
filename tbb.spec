@@ -1,5 +1,5 @@
 %global upver 2018
-%global uprel 2
+%global uprel 4
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -8,7 +8,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 5%{?dist}
+Release: 1%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -93,10 +93,7 @@ Python 3 TBB module.
 
 
 %prep
-%setup -q -n %{name}-%{upver}_U%{uprel}
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1 -n %{name}-%{upver}_U%{uprel}
 
 # For repeatable builds, don't query the hostname or architecture
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
@@ -232,9 +229,7 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/cmake
 cp -a cmake $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}
 rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets libs
 
 %files
 %doc doc/Release_Notes.txt README.md
@@ -271,6 +266,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Thu May 31 2018 Jerry James <loganjerry@gmail.com> - 2018.4-1
+- Rebase to 2018 update 4
+
 * Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.2-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
