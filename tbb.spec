@@ -1,5 +1,5 @@
 %global upver 2018
-%global uprel 4
+%global uprel 5
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global with_python3 1
@@ -8,7 +8,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
@@ -32,7 +32,7 @@ Patch2: tbb-4.0-mfence.patch
 # Don't snip -Wall from C++ flags.  Add -fno-strict-aliasing, as that
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
-Patch3: tbb-4.3-dont-snip-Wall.patch
+Patch3: tbb-2018U5-dont-snip-Wall.patch
 
 BuildRequires: gcc-c++
 BuildRequires: python2-devel
@@ -165,9 +165,7 @@ popd
 
 
 %check
-%ifarch ppc64le
 make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="$RPM_OPT_FLAGS"
-%endif
 
 %install
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}
@@ -266,6 +264,10 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %endif
 
 %changelog
+* Tue Jul  3 2018 Jerry James <loganjerry@gmail.com> - 2018.5-1
+- Rebase to 2018 update 5
+- Run check script on all architectures
+
 * Tue Jun 19 2018 Miro Hrončok <mhroncok@redhat.com> - 2018.4-2
 - Rebuilt for Python 3.7
 

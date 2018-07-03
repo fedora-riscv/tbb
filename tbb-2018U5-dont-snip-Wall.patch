@@ -1,0 +1,38 @@
+diff -up tbb-2018_U5/build/common_rules.inc\~ tbb-2018_U5/build/common_rules.inc
+--- tbb-2018_U5/build/common_rules.inc~	2018-06-19 10:04:20.000000000 -0600
++++ tbb-2018_U5/build/common_rules.inc	2018-07-03 11:18:03.540252098 -0600
+@@ -136,7 +136,7 @@ LINK_FILES+=$(TEST_LIBS)
+ 
+ # Customizations
+ $(KNOWN_WARNINGS): %.$(OBJ): %.cpp
+-	$(CPLUS) $(COMPILE_ONLY) $(subst $(WARNING_KEY),,$(CPLUS_FLAGS)) $(CXX_ONLY_FLAGS) $(CXX_WARN_SUPPRESS) $(INCLUDES) $<
++	$(CPLUS) $(COMPILE_ONLY) $(CPLUS_FLAGS) $(CXX_ONLY_FLAGS) $(CXX_WARN_SUPPRESS) $(INCLUDES) $<
+ 
+ tbb_misc.$(OBJ): version_string.ver
+ tbb_misc.$(OBJ): INCLUDES+=$(INCLUDE_KEY).
+diff -up tbb-2018_U5/build/Makefile.tbbmalloc\~ tbb-2018_U5/build/Makefile.tbbmalloc
+--- tbb-2018_U5/build/Makefile.tbbmalloc~	2018-07-03 11:16:37.945377902 -0600
++++ tbb-2018_U5/build/Makefile.tbbmalloc	2018-07-03 11:16:58.872102659 -0600
+@@ -51,7 +51,7 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
+ MALLOC_CPLUS.OBJ = backend.$(OBJ) large_objects.$(OBJ) backref.$(OBJ)  tbbmalloc.$(OBJ)
+ MALLOC.OBJ := $(MALLOC_CPLUS.OBJ) $(MALLOC_ASM.OBJ) itt_notify_malloc.$(OBJ) frontend.$(OBJ)
+ PROXY.OBJ := proxy.$(OBJ) tbb_function_replacement.$(OBJ)
+-M_CPLUS_FLAGS := $(subst $(WARNING_KEY),,$(M_CPLUS_FLAGS)) $(CXXFLAGS) $(DEFINE_KEY)__TBBMALLOC_BUILD=1
++M_CPLUS_FLAGS := $(CXXFLAGS) -fno-strict-aliasing $(DEFINE_KEY)__TBBMALLOC_BUILD=1
+ M_INCLUDES := $(INCLUDES) $(INCLUDE_KEY)$(MALLOC_ROOT) $(INCLUDE_KEY)$(MALLOC_SOURCE_ROOT)
+ 
+ # Suppress superfluous warnings for TBBMalloc compilation
+diff -dup tbb-2018_U5/build/Makefile.test\~ tbb-2018_U5/build/Makefile.test
+--- tbb-2018_U5/build/Makefile.test~	2018-06-19 10:04:20.000000000 -0600
++++ tbb-2018_U5/build/Makefile.test	2018-07-03 11:18:53.651592978 -0600
+@@ -272,7 +272,7 @@ test_tbb_plain: $(TEST_PREREQUISITE) $(T
+ 
+ 
+ # For deprecated files, we don't mind warnings etc., thus compilation rules are most relaxed
+-CPLUS_FLAGS_DEPRECATED = $(DEFINE_KEY)__TBB_TEST_DEPRECATED=1 $(subst $(WARNING_KEY),,$(CPLUS_FLAGS)) $(WARNING_SUPPRESS) $(INCLUDE_KEY)$(tbb_root)/src/test
++CPLUS_FLAGS_DEPRECATED = $(DEFINE_KEY)__TBB_TEST_DEPRECATED=1 $(CPLUS_FLAGS) $(WARNING_SUPPRESS) $(INCLUDE_KEY)$(tbb_root)/src/test
+ TEST_TBB_OLD.OBJ = test_concurrent_vector_v2.$(OBJ) test_concurrent_queue_v2.$(OBJ) test_mutex_v2.$(OBJ) test_task_scheduler_observer_v3.$(OBJ) 
+ 
+ $(TEST_TBB_OLD.OBJ): CPLUS_FLAGS := $(CPLUS_FLAGS_DEPRECATED)
+
+Diff finished.  Tue Jul  3 11:19:32 2018
