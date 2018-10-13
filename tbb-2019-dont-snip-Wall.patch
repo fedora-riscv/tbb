@@ -1,7 +1,7 @@
-diff -up tbb-2018_U5/build/common_rules.inc\~ tbb-2018_U5/build/common_rules.inc
---- tbb-2018_U5/build/common_rules.inc~	2018-06-19 10:04:20.000000000 -0600
-+++ tbb-2018_U5/build/common_rules.inc	2018-07-03 11:18:03.540252098 -0600
-@@ -136,7 +136,7 @@ LINK_FILES+=$(TEST_LIBS)
+diff -up tbb-2019_U1/build/common_rules.inc.orig tbb-2019_U1/build/common_rules.inc
+--- tbb-2019_U1/build/common_rules.inc.orig	2018-10-04 03:38:29.000000000 -0600
++++ tbb-2019_U1/build/common_rules.inc	2018-10-05 09:12:02.123194170 -0600
+@@ -130,7 +130,7 @@ LINK_FILES+=$(TEST_LIBS)
  
  # Customizations
  $(KNOWN_WARNINGS): %.$(OBJ): %.cpp
@@ -10,21 +10,26 @@ diff -up tbb-2018_U5/build/common_rules.inc\~ tbb-2018_U5/build/common_rules.inc
  
  tbb_misc.$(OBJ): version_string.ver
  tbb_misc.$(OBJ): INCLUDES+=$(INCLUDE_KEY).
-diff -up tbb-2018_U5/build/Makefile.tbbmalloc\~ tbb-2018_U5/build/Makefile.tbbmalloc
---- tbb-2018_U5/build/Makefile.tbbmalloc~	2018-07-03 11:16:37.945377902 -0600
-+++ tbb-2018_U5/build/Makefile.tbbmalloc	2018-07-03 11:16:58.872102659 -0600
-@@ -51,7 +51,7 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
+diff -up tbb-2019_U1/build/Makefile.tbbmalloc.orig tbb-2019_U1/build/Makefile.tbbmalloc
+--- tbb-2019_U1/build/Makefile.tbbmalloc.orig	2018-10-04 03:38:29.000000000 -0600
++++ tbb-2019_U1/build/Makefile.tbbmalloc	2018-10-05 09:12:52.330321722 -0600
+@@ -51,11 +51,11 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
  MALLOC_CPLUS.OBJ = backend.$(OBJ) large_objects.$(OBJ) backref.$(OBJ)  tbbmalloc.$(OBJ)
  MALLOC.OBJ := $(MALLOC_CPLUS.OBJ) $(MALLOC_ASM.OBJ) itt_notify_malloc.$(OBJ) frontend.$(OBJ)
  PROXY.OBJ := proxy.$(OBJ) tbb_function_replacement.$(OBJ)
--M_CPLUS_FLAGS := $(subst $(WARNING_KEY),,$(M_CPLUS_FLAGS)) $(CXXFLAGS) $(DEFINE_KEY)__TBBMALLOC_BUILD=1
-+M_CPLUS_FLAGS := $(CXXFLAGS) -fno-strict-aliasing $(DEFINE_KEY)__TBBMALLOC_BUILD=1
+-M_CPLUS_FLAGS += $(DEFINE_KEY)__TBBMALLOC_BUILD=1
++M_CPLUS_FLAGS += -fno-strict-aliasing $(DEFINE_KEY)__TBBMALLOC_BUILD=1
  M_INCLUDES := $(INCLUDES) $(INCLUDE_KEY)$(MALLOC_ROOT) $(INCLUDE_KEY)$(MALLOC_SOURCE_ROOT)
  
  # Suppress superfluous warnings for TBBMalloc compilation
-diff -dup tbb-2018_U5/build/Makefile.test\~ tbb-2018_U5/build/Makefile.test
---- tbb-2018_U5/build/Makefile.test~	2018-06-19 10:04:20.000000000 -0600
-+++ tbb-2018_U5/build/Makefile.test	2018-07-03 11:18:53.651592978 -0600
+-$(MALLOC.OBJ): M_CPLUS_FLAGS := $(subst $(WARNING_KEY),,$(M_CPLUS_FLAGS)) $(WARNING_SUPPRESS)
++$(MALLOC.OBJ): M_CPLUS_FLAGS := $(M_CPLUS_FLAGS) $(WARNING_SUPPRESS)
+ # Suppress superfluous warnings for TBBMalloc proxy compilation
+ $(PROXY.OBJ): CPLUS_FLAGS += $(WARNING_SUPPRESS)
+ 
+diff -up tbb-2019_U1/build/Makefile.test.orig tbb-2019_U1/build/Makefile.test
+--- tbb-2019_U1/build/Makefile.test.orig	2018-10-04 03:38:29.000000000 -0600
++++ tbb-2019_U1/build/Makefile.test	2018-10-05 09:13:19.385851579 -0600
 @@ -272,7 +272,7 @@ test_tbb_plain: $(TEST_PREREQUISITE) $(T
  
  
@@ -35,4 +40,4 @@ diff -dup tbb-2018_U5/build/Makefile.test\~ tbb-2018_U5/build/Makefile.test
  
  $(TEST_TBB_OLD.OBJ): CPLUS_FLAGS := $(CPLUS_FLAGS_DEPRECATED)
 
-Diff finished.  Tue Jul  3 11:19:32 2018
+Diff finished.  Fri Oct  5 09:13:20 2018

@@ -1,46 +1,30 @@
-%global upver 2018
-%global uprel 5
-
-%if 0%{?fedora} || 0%{?rhel} >= 8
-%global with_python3 1
-%endif
+%global upver 2019
+%global uprel 1
+%global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: ASL 2.0
 Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
 
-Source0: https://github.com/01org/tbb/archive/%{upver}%{?uprel:_U%{uprel}}.tar.gz
+Source0: https://github.com/01org/tbb/archive/%{upfullver}/%{name}-%{upfullver}.tar.gz
 # These three are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
 Source8: tbbmalloc_proxy.pc
 
-# Propagate CXXFLAGS variable into flags used when compiling C++.
-# This is so that RPM_OPT_FLAGS are respected.
-Patch1: tbb-4.4-cxxflags.patch
-
-# For 32-bit x86 only, don't assume that the mfence instruction is available.
-# It was added with SSE2.  This patch causes a lock xchg instruction to be
-# emitted for non-SSE2 builds, and the mfence instruction to be emitted for
-# SSE2-enabled builds.
-Patch2: tbb-4.0-mfence.patch
-
 # Don't snip -Wall from C++ flags.  Add -fno-strict-aliasing, as that
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
-Patch3: tbb-2018U5-dont-snip-Wall.patch
+Patch0: tbb-2019-dont-snip-Wall.patch
 
+BuildRequires: doxygen
 BuildRequires: gcc-c++
-BuildRequires: python2-devel
-BuildRequires: swig
-
-%if 0%{?with_python3}
 BuildRequires: python3-devel
-%endif
+BuildRequires: swig
 
 %description
 Threading Building Blocks (TBB) is a C++ runtime library that
@@ -58,6 +42,7 @@ maintenance is required as more processor cores become available.
 Summary: The Threading Building Blocks C++ headers and shared development libraries
 Group: Development/Libraries
 Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: cmake-filesystem%{?_isa}
 
 %description devel
 Header files and shared object symlinks for the Threading Building
@@ -74,36 +59,29 @@ PDF documentation for the user of the Threading Building Block (TBB)
 C++ library.
 
 
-%package -n python2-%{name}
-Summary: Python 2 TBB module
-%{?python_provide:%python_provide python2-%{name}}
-
-%description -n python2-%{name}
-Python 2 TBB module.
-
-
-%if 0%{?with_python3}
 %package -n python3-%{name}
 Summary: Python 3 TBB module
 %{?python_provide:%python_provide python3-%{name}}
 
 %description -n python3-%{name}
 Python 3 TBB module.
-%endif
 
 
 %prep
-%autosetup -p1 -n %{name}-%{upver}_U%{uprel}
+%autosetup -p1 -n %{name}-%{upfullver}
 
 # For repeatable builds, don't query the hostname or architecture
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
-# Do not assume the RTM instructions are available
-sed -i 's/-mrtm//' build/linux.gcc.inc
+# Do not assume the RTM instructions are available.
+# Insert --as-needed before the libraries to be linked.
+sed -e 's/-mrtm//' \
+    -e "s|LIB_LINK_FLAGS = |&-Wl,--as-needed $RPM_LD_FLAGS |" \
+    -i build/linux.gcc.inc
 
 # Invoke the right python binary directly
-sed -i 's,env python,python2,' python/TBB.py python/tbb/__*.py
+sed -i 's,env python,python3,' python/TBB.py python/tbb/__*.py
 
 # Remove shebang from files that don't need it
 sed -i '/^#!/d' python/tbb/{pool,test}.py
@@ -115,32 +93,16 @@ if [ "%{_libdir}" != "%{_prefix}/lib" ]; then
   rm cmake/TBBMakeConfig.cmake.orig
 fi
 
-# Prepare to build the python module for both python 2 and python 3
-cp -a python python3
-sed -i 's,python,python3,g' python3/Makefile python3/rml/Makefile
-sed -i 's,python2,python3,' python3/TBB.py python3/tbb/__*.py
-
 %build
-%ifarch %{ix86}
-# Build an SSE2-enabled version so the mfence instruction can be used
-cp -a build build.orig
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS -march=pentium4 -msse2" \
-  LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS"
-mv build build.sse2
-mv build.orig build
-%endif
-
-make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS" \
-  LDFLAGS="-Wl,--as-needed $RPM_LD_FLAGS"
+  CXXFLAGS="$RPM_OPT_FLAGS"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
     touch -r ${file} ${base}
 done
 
-# Build for python 2
+# Build for python 3
 . build/obj_release/tbbvars.sh
 pushd python
 make %{?_smp_mflags} -C rml stdver=c++14 \
@@ -148,21 +110,11 @@ make %{?_smp_mflags} -C rml stdver=c++14 \
   PIC_KEY="-fPIC -Wl,--as-needed" \
   LDFLAGS="$RPM_LD_FLAGS"
 cp -p rml/libirml.so* .
-%py2_build
-popd
-
-%if 0%{?with_python3}
-# Build for python 3
-pushd python3
-make %{?_smp_mflags} -C rml stdver=c++14 \
-  CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
-  PIC_KEY="-fPIC -Wl,--as-needed" \
-  LDFLAGS="$RPM_LD_FLAGS"
-cp -p rml/libirml.so* .
 %py3_build
 popd
-%endif
 
+# Build the documentation
+make doxygen
 
 %check
 make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="$RPM_OPT_FLAGS"
@@ -170,15 +122,6 @@ make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="$RPM_OPT_FLAGS"
 %install
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}
 mkdir -p $RPM_BUILD_ROOT/%{_includedir}
-
-%ifarch %{ix86}
-mkdir -p $RPM_BUILD_ROOT/%{_libdir}/sse2
-pushd build.sse2/obj_release
-    for file in libtbb{,malloc{,_proxy}}; do
-        install -p -D -m 755 ${file}.so.2 $RPM_BUILD_ROOT/%{_libdir}/sse2
-    done
-popd
-%endif
 
 pushd build/obj_release
     for file in libtbb{,malloc{,_proxy}}; do
@@ -202,68 +145,54 @@ done
 mkdir -p $RPM_BUILD_ROOT%{_includedir}/rml
 cp -p src/rml/include/*.h $RPM_BUILD_ROOT%{_includedir}/rml
 
-# Python 2 install
+# Python 3 install
 . build/obj_release/tbbvars.sh
 pushd python
-%py2_install
-chmod a+x $RPM_BUILD_ROOT%{python2_sitearch}/TBB.py
-chmod a+x $RPM_BUILD_ROOT%{python2_sitearch}/tbb/__*.py
-cp -p libirml.so.1 $RPM_BUILD_ROOT%{_libdir}
-ln -s libirml.so.1 $RPM_BUILD_ROOT%{_libdir}/libirml.so
-popd
-
-%if 0%{?with_python3}
-# Python 3 install
-pushd python3
 %py3_install
 chmod a+x $RPM_BUILD_ROOT%{python3_sitearch}/TBB.py
 chmod a+x $RPM_BUILD_ROOT%{python3_sitearch}/tbb/__*.py
 cp -p libirml.so.1 $RPM_BUILD_ROOT%{_libdir}
+ln -s libirml.so.1 $RPM_BUILD_ROOT%{_libdir}/libirml.so
 popd
-%endif
 
 # Install the cmake files
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/cmake
 cp -a cmake $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}
 rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 
-%ldconfig_scriptlets libs
-
 %files
 %doc doc/Release_Notes.txt README.md
 %license LICENSE
-%{_libdir}/*.so.2
+%{_libdir}/libtbb.so.2
+%{_libdir}/libtbbmalloc.so.2
+%{_libdir}/libtbbmalloc_proxy.so.2
 %{_libdir}/libirml.so.1
-%ifarch %{ix86}
-%{_libdir}/sse2/*.so.2
-%endif
 
 %files devel
 %doc CHANGES cmake/README.rst
-%{_includedir}/rml
-%{_includedir}/tbb
+%{_includedir}/rml/
+%{_includedir}/tbb/
 %{_libdir}/*.so
-%{_libdir}/cmake/
+%{_libdir}/cmake/tbb/
 %{_libdir}/pkgconfig/*.pc
 
 %files doc
 %doc doc/Release_Notes.txt
-%doc doc/html
+%doc html
 
-%files -n python2-%{name}
-%doc python/index.html
-%{python2_sitearch}/TBB*
-%{python2_sitearch}/tbb/
-
-%if 0%{?with_python3}
 %files -n python3-%{name}
-%doc python3/index.html
+%doc python/index.html
 %{python3_sitearch}/TBB*
 %{python3_sitearch}/tbb/
 %{python3_sitearch}/__pycache__/TBB*
-%endif
 
 %changelog
+* Thu Oct  4 2018 Jerry James <loganjerry@gmail.com> - 2019.1-1
+- Rebase to 2019 update 1
+- Drop special SSE2 build for 32-bit x86 as that is now default
+- Drop unneeded -cxxflags patch
+- Drop python 2 support (bz 1629761)
+
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.5-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
