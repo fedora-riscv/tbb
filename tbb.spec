@@ -7,7 +7,6 @@ Summary: The Threading Building Blocks library abstracts low-level threading det
 Version: %{upver}%{?uprel:.%{uprel}}
 Release: 1%{?dist}
 License: ASL 2.0
-Group:   Development/Tools
 URL:     http://threadingbuildingblocks.org/
 
 Source0: https://github.com/01org/tbb/archive/%{upfullver}/%{name}-%{upfullver}.tar.gz
@@ -40,7 +39,6 @@ maintenance is required as more processor cores become available.
 
 %package devel
 Summary: The Threading Building Blocks C++ headers and shared development libraries
-Group: Development/Libraries
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: cmake-filesystem%{?_isa}
 
@@ -51,7 +49,6 @@ Blocks (TBB) C++ libraries.
 
 %package doc
 Summary: The Threading Building Blocks documentation
-Group: Documentation
 Provides: bundled(jquery)
 
 %description doc
