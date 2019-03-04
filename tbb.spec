@@ -1,11 +1,11 @@
 %global upver 2019
-%global uprel 3
+%global uprel 4
 %global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 2%{?dist}
+Release: 1%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -184,6 +184,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Mon Mar  4 2019 Jerry James <loganjerry@gmail.com> - 2019.4-1
+- Rebase to 2019 update 4
+
 * Sun Feb 03 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
