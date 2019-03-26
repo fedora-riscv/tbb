@@ -1,5 +1,5 @@
 %global upver 2019
-%global uprel 4
+%global uprel 5
 %global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
@@ -184,6 +184,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Mon Mar 25 2019 Jerry James <loganjerry@gmail.com> - 2019.5-1
+- Rebase to 2019 update 5
+
 * Mon Mar  4 2019 Jerry James <loganjerry@gmail.com> - 2019.4-1
 - Rebase to 2019 update 4
 
