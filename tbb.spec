@@ -1,5 +1,5 @@
 %global upver 2019
-%global uprel 5
+%global uprel 6
 %global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
@@ -19,6 +19,9 @@ Source8: tbbmalloc_proxy.pc
 # uncovers some static-aliasing warnings.
 # Related: https://bugzilla.redhat.com/show_bug.cgi?id=1037347
 Patch0: tbb-2019-dont-snip-Wall.patch
+
+# Make attributes of aliases match those on the aliased function.
+Patch1: tbb-2019-attributes.patch
 
 BuildRequires: doxygen
 BuildRequires: gcc-c++
@@ -184,6 +187,10 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu May  9 2019 Jerry James <loganjerry@gmail.com> - 2019.6-1
+- Rebase to 2019 update 6
+- Add -attributes patch to silence gcc warnings
+
 * Mon Mar 25 2019 Jerry James <loganjerry@gmail.com> - 2019.5-1
 - Rebase to 2019 update 5
 

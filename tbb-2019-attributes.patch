@@ -1,0 +1,31 @@
+diff -up tbb-2019_U6/src/tbbmalloc/proxy.cpp.orig tbb-2019_U6/src/tbbmalloc/proxy.cpp
+--- tbb-2019_U6/src/tbbmalloc/proxy.cpp.orig	2019-04-18 05:14:08.000000000 -0600
++++ tbb-2019_U6/src/tbbmalloc/proxy.cpp	2019-05-08 09:27:27.394676858 -0600
+@@ -146,7 +146,7 @@ static inline void initPageSize()
+    1) detection that the proxy library is loaded
+    2) check that dlsym("malloc") found something different from our replacement malloc
+ */
+-extern "C" void *__TBB_malloc_proxy(size_t) __attribute__ ((alias ("malloc")));
++extern "C" void *__TBB_malloc_proxy(size_t) __attribute__ ((alias ("malloc"),alloc_size(1),leaf,malloc,nothrow));
+ 
+ static void *orig_msize;
+ 
+@@ -293,11 +293,11 @@ void *aligned_alloc(size_t alignment, si
+ // in conjunction with standard malloc/free, so we must ovberload them.
+ // Bionic doesn't have them. Not removing from the linker scripts,
+ // as absent entry points are ignored by the linker.
+-void *__libc_malloc(size_t size) __attribute__ ((alias ("malloc")));
+-void *__libc_calloc(size_t num, size_t size) __attribute__ ((alias ("calloc")));
+-void *__libc_memalign(size_t alignment, size_t size) __attribute__ ((alias ("memalign")));
+-void *__libc_pvalloc(size_t size) __attribute__ ((alias ("pvalloc")));
+-void *__libc_valloc(size_t size) __attribute__ ((alias ("valloc")));
++void *__libc_malloc(size_t size) __attribute__ ((alias ("malloc"),alloc_size(1),leaf,malloc,nothrow));
++void *__libc_calloc(size_t num, size_t size) __attribute__ ((alias ("calloc"),alloc_size(1,2),leaf,malloc,nothrow));
++void *__libc_memalign(size_t alignment, size_t size) __attribute__ ((alias ("memalign"),alloc_size(2),malloc,nothrow));
++void *__libc_pvalloc(size_t size) __attribute__ ((alias ("pvalloc"),alloc_size(1),malloc,nothrow));
++void *__libc_valloc(size_t size) __attribute__ ((alias ("valloc"),alloc_size(1),malloc,nothrow));
+ 
+ // call original __libc_* to support naive replacement of free via __libc_free etc
+ void __libc_free(void *ptr)
+
+Diff finished.  Wed May  8 09:27:28 2019

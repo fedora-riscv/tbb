@@ -1,7 +1,7 @@
-diff -up tbb-2019_U1/build/common_rules.inc.orig tbb-2019_U1/build/common_rules.inc
---- tbb-2019_U1/build/common_rules.inc.orig	2018-10-04 03:38:29.000000000 -0600
-+++ tbb-2019_U1/build/common_rules.inc	2018-10-05 09:12:02.123194170 -0600
-@@ -130,7 +130,7 @@ LINK_FILES+=$(TEST_LIBS)
+diff -up tbb-2019_U6/build/common_rules.inc.orig tbb-2019_U6/build/common_rules.inc
+--- tbb-2019_U6/build/common_rules.inc.orig	2019-04-18 05:14:08.000000000 -0600
++++ tbb-2019_U6/build/common_rules.inc	2019-05-08 08:30:03.434532204 -0600
+@@ -126,7 +126,7 @@ LINK_FILES+=$(TEST_LIBS)
  
  # Customizations
  $(KNOWN_WARNINGS): %.$(OBJ): %.cpp
@@ -10,10 +10,10 @@ diff -up tbb-2019_U1/build/common_rules.inc.orig tbb-2019_U1/build/common_rules.
  
  tbb_misc.$(OBJ): version_string.ver
  tbb_misc.$(OBJ): INCLUDES+=$(INCLUDE_KEY).
-diff -up tbb-2019_U1/build/Makefile.tbbmalloc.orig tbb-2019_U1/build/Makefile.tbbmalloc
---- tbb-2019_U1/build/Makefile.tbbmalloc.orig	2018-10-04 03:38:29.000000000 -0600
-+++ tbb-2019_U1/build/Makefile.tbbmalloc	2018-10-05 09:12:52.330321722 -0600
-@@ -51,11 +51,11 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
+diff -up tbb-2019_U6/build/Makefile.tbbmalloc.orig tbb-2019_U6/build/Makefile.tbbmalloc
+--- tbb-2019_U6/build/Makefile.tbbmalloc.orig	2019-04-18 05:14:08.000000000 -0600
++++ tbb-2019_U6/build/Makefile.tbbmalloc	2019-05-08 08:30:03.447531968 -0600
+@@ -47,11 +47,11 @@ ORIG_LINK_MALLOC.LIB:=$(LINK_MALLOC.LIB)
  MALLOC_CPLUS.OBJ = backend.$(OBJ) large_objects.$(OBJ) backref.$(OBJ)  tbbmalloc.$(OBJ)
  MALLOC.OBJ := $(MALLOC_CPLUS.OBJ) $(MALLOC_ASM.OBJ) itt_notify_malloc.$(OBJ) frontend.$(OBJ)
  PROXY.OBJ := proxy.$(OBJ) tbb_function_replacement.$(OBJ)
@@ -27,17 +27,17 @@ diff -up tbb-2019_U1/build/Makefile.tbbmalloc.orig tbb-2019_U1/build/Makefile.tb
  # Suppress superfluous warnings for TBBMalloc proxy compilation
  $(PROXY.OBJ): CPLUS_FLAGS += $(WARNING_SUPPRESS)
  
-diff -up tbb-2019_U1/build/Makefile.test.orig tbb-2019_U1/build/Makefile.test
---- tbb-2019_U1/build/Makefile.test.orig	2018-10-04 03:38:29.000000000 -0600
-+++ tbb-2019_U1/build/Makefile.test	2018-10-05 09:13:19.385851579 -0600
-@@ -272,7 +272,7 @@ test_tbb_plain: $(TEST_PREREQUISITE) $(T
+diff -up tbb-2019_U6/build/Makefile.test.orig tbb-2019_U6/build/Makefile.test
+--- tbb-2019_U6/build/Makefile.test.orig	2019-05-08 08:30:03.448531949 -0600
++++ tbb-2019_U6/build/Makefile.test	2019-05-08 08:31:48.190498336 -0600
+@@ -266,7 +266,7 @@ test_tbb_plain: $(TEST_PREREQUISITE) $(T
  
  
  # For deprecated files, we don't mind warnings etc., thus compilation rules are most relaxed
 -CPLUS_FLAGS_DEPRECATED = $(DEFINE_KEY)__TBB_TEST_DEPRECATED=1 $(subst $(WARNING_KEY),,$(CPLUS_FLAGS)) $(WARNING_SUPPRESS) $(INCLUDE_KEY)$(tbb_root)/src/test
 +CPLUS_FLAGS_DEPRECATED = $(DEFINE_KEY)__TBB_TEST_DEPRECATED=1 $(CPLUS_FLAGS) $(WARNING_SUPPRESS) $(INCLUDE_KEY)$(tbb_root)/src/test
- TEST_TBB_OLD.OBJ = test_concurrent_vector_v2.$(OBJ) test_concurrent_queue_v2.$(OBJ) test_mutex_v2.$(OBJ) test_task_scheduler_observer_v3.$(OBJ) 
+ TEST_TBB_OLD.OBJ = test_concurrent_vector_v2.$(OBJ) test_concurrent_queue_v2.$(OBJ) test_mutex_v2.$(OBJ) test_task_scheduler_observer_v3.$(OBJ)
  
  $(TEST_TBB_OLD.OBJ): CPLUS_FLAGS := $(CPLUS_FLAGS_DEPRECATED)
 
-Diff finished.  Fri Oct  5 09:13:20 2018
+Diff finished.  Wed May  8 08:31:49 2019
