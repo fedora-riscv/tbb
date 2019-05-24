@@ -1,5 +1,5 @@
 %global upver 2019
-%global uprel 6
+%global uprel 7
 %global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
@@ -187,6 +187,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu May 23 2019 Jerry James <loganjerry@gmail.com> - 2019.7-1
+- Rebase to 2019 update 7
+
 * Thu May  9 2019 Jerry James <loganjerry@gmail.com> - 2019.6-1
 - Rebase to 2019 update 6
 - Add -attributes patch to silence gcc warnings
