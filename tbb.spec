@@ -1,5 +1,5 @@
 %global upver 2019
-%global uprel 7
+%global uprel 8
 %global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
@@ -85,13 +85,6 @@ sed -i 's,env python,python3,' python/TBB.py python/tbb/__*.py
 
 # Remove shebang from files that don't need it
 sed -i '/^#!/d' python/tbb/{pool,test}.py
-
-# Fix libdir on 64-bit systems
-if [ "%{_libdir}" != "%{_prefix}/lib" ]; then
-  sed -i.orig 's/"lib"/"%{_lib}"/' cmake/TBBMakeConfig.cmake
-  touch -r cmake/TBBMakeConfig.cmake.orig cmake/TBBMakeConfig.cmake
-  rm cmake/TBBMakeConfig.cmake.orig
-fi
 
 %build
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
@@ -187,6 +180,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Sat Jun  8 2019 Jerry James <loganjerry@gmail.com> - 2019.8-1
+- Rebase to 2019 update 8
+
 * Thu May 23 2019 Jerry James <loganjerry@gmail.com> - 2019.7-1
 - Rebase to 2019 update 7
 
