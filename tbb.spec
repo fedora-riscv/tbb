@@ -23,6 +23,14 @@ Patch0: tbb-2019-dont-snip-Wall.patch
 # Make attributes of aliases match those on the aliased function.
 Patch1: tbb-2019-attributes.patch
 
+# Fix test-thread-monitor, which had multiple bugs that could (and did, on
+# ppc64le) result in a hang.
+Patch2: tbb-2019-test-thread-monitor.patch
+
+# Fix a test that builds a 4-thread barrier, but cannot guarantee that more
+# than 2 threads will be available to use it.
+Patch3: tbb-2019-test-task-scheduler-init.patch
+
 BuildRequires: doxygen
 BuildRequires: gcc-c++
 BuildRequires: python3-devel
@@ -180,6 +188,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Tue Aug 27 2019 Jerry James <loganjerry@gmail.com> - 2019.8-3
+- Add -test-thread-monitor and -test-task-scheduler-init patches to fix FTBFS
+
 * Mon Aug 19 2019 Miro Hrončok <mhroncok@redhat.com> - 2019.8-3
 - Rebuilt for Python 3.8
 
