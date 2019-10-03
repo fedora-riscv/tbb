@@ -5,7 +5,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -188,6 +188,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu Oct 03 2019 Miro Hrončok <mhroncok@redhat.com> - 2019.8-4
+- Rebuilt for Python 3.8.0rc1 (#1748018)
+
 * Tue Aug 27 2019 Jerry James <loganjerry@gmail.com> - 2019.8-3
 - Add -test-thread-monitor and -test-task-scheduler-init patches to fix FTBFS
 
