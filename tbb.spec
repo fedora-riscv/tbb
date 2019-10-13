@@ -1,11 +1,11 @@
 %global upver 2019
-%global uprel 8
+%global uprel 9
 %global upfullver %{upver}%{?uprel:_U%{uprel}}
 
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: %{upver}%{?uprel:.%{uprel}}
-Release: 4%{?dist}
+Release: 1%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -85,7 +85,7 @@ sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
 # Do not assume the RTM instructions are available.
 # Insert --as-needed before the libraries to be linked.
 sed -e 's/-mrtm//' \
-    -e "s|LIB_LINK_FLAGS = |&-Wl,--as-needed $RPM_LD_FLAGS |" \
+    -e "s/-fPIC/& -Wl,--as-needed/" \
     -i build/linux.gcc.inc
 
 # Invoke the right python binary directly
@@ -96,7 +96,8 @@ sed -i '/^#!/d' python/tbb/{pool,test}.py
 
 %build
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-  CXXFLAGS="$RPM_OPT_FLAGS"
+    CXXFLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
+    LDFLAGS="$RPM_LD_FLAGS -lpthread"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
@@ -107,9 +108,8 @@ done
 . build/obj_release/tbbvars.sh
 pushd python
 make %{?_smp_mflags} -C rml stdver=c++14 \
-  CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
-  PIC_KEY="-fPIC -Wl,--as-needed" \
-  LDFLAGS="$RPM_LD_FLAGS"
+    CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
+    LDFLAGS="$RPM_LD_FLAGS -lpthread"
 cp -p rml/libirml.so* .
 %py3_build
 popd
@@ -118,7 +118,7 @@ popd
 make doxygen
 
 %check
-make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="$RPM_OPT_FLAGS"
+make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="%{optflags}"
 
 %install
 mkdir -p $RPM_BUILD_ROOT/%{_libdir}
@@ -188,6 +188,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Sat Oct 12 2019 Jerry James <loganjerry@gmail.com> - 2019.9-1
+- Rebase to 2019 update 9
+
 * Thu Oct 03 2019 Miro Hrončok <mhroncok@redhat.com> - 2019.8-4
 - Rebuilt for Python 3.8.0rc1 (#1748018)
 
