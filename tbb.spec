@@ -31,6 +31,10 @@ Patch2: tbb-2019-test-thread-monitor.patch
 # than 2 threads will be available to use it.
 Patch3: tbb-2019-test-task-scheduler-init.patch
 
+# Fix compilation on aarch64 and s390x.  See
+# https://github.com/intel/tbb/issues/186
+Patch4: tbb-2019-fetchadd4.patch
+
 BuildRequires: doxygen
 BuildRequires: gcc-c++
 BuildRequires: python3-devel
