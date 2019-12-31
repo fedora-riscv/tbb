@@ -3,3 +3,6 @@
 
 # The dictionary lacks some technical words
 addFilter(r'spelling-error .* symlinks')
+
+# We use whatever version of jquery doxygen gives us
+addFilter(r'W: unversioned-explicit-provides bundled\(jquery\)')

@@ -1,15 +1,11 @@
-%global upver 2019
-%global uprel 9
-%global upfullver %{upver}%{?uprel:_U%{uprel}}
-
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: %{upver}%{?uprel:.%{uprel}}
+Version: 2020
 Release: 1%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
-Source0: https://github.com/01org/tbb/archive/%{upfullver}/%{name}-%{upfullver}.tar.gz
+Source0: https://github.com/intel/tbb/archive/%{version}/%{name}-%{version}.tar.gz
 # These three are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
@@ -80,7 +76,7 @@ Python 3 TBB module.
 
 
 %prep
-%autosetup -p1 -n %{name}-%{upfullver}
+%autosetup -p1
 
 # For repeatable builds, don't query the hostname or architecture
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
@@ -192,6 +188,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Tue Dec 31 2019 Jerry James <loganjerry@gmail.com> - 2020-1
+- Rebase to version 2020
+
 * Sat Oct 12 2019 Jerry James <loganjerry@gmail.com> - 2019.9-1
 - Rebase to 2019 update 9
 
