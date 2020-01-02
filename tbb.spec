@@ -118,6 +118,13 @@ popd
 make doxygen
 
 %check
+# This test assumes it can create thread barriers for arbitrary numbers of
+# threads, but tbb limits the number of threads spawned to a function of the
+# number of CPUs available.  Some of the koji builders have a small number of
+# CPUs, so the test hangs waiting for threads that have not been created to
+# arrive at the barrier.  Skip this test until upstream fixes it.
+sed -i '/test_task_scheduler_observer/d' build/Makefile.test
+
 make test tbb_build_prefix=obj stdver=c++14 CXXFLAGS="%{optflags}"
 
 %install
