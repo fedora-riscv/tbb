@@ -1,11 +1,11 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: 2020
+Version: 2020.1
 Release: 1%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
-Source0: https://github.com/intel/tbb/archive/%{version}/%{name}-%{version}.tar.gz
+Source0: https://github.com/intel/tbb/archive/v%{version}/%{name}-%{version}.tar.gz
 # These three are downstream sources.
 Source6: tbb.pc
 Source7: tbbmalloc.pc
@@ -195,6 +195,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Wed Jan 22 2020 Jerry James <loganjerry@gmail.com> - 2020.1-1
+- Rebase to version 2020.1
+
 * Tue Dec 31 2019 Jerry James <loganjerry@gmail.com> - 2020-1
 - Rebase to version 2020
 
