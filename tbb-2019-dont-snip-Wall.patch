@@ -1,7 +1,7 @@
 diff -up tbb-2019_U6/build/common_rules.inc.orig tbb-2019_U6/build/common_rules.inc
 --- tbb-2019_U6/build/common_rules.inc.orig	2019-04-18 05:14:08.000000000 -0600
 +++ tbb-2019_U6/build/common_rules.inc	2019-05-08 08:30:03.434532204 -0600
-@@ -126,7 +126,7 @@ LINK_FILES+=$(TEST_LIBS)
+@@ -130,7 +130,7 @@ LINK_FILES+=$(TEST_LIBS)
  
  # Customizations
  $(KNOWN_WARNINGS): %.$(OBJ): %.cpp
@@ -30,7 +30,7 @@ diff -up tbb-2019_U6/build/Makefile.tbbmalloc.orig tbb-2019_U6/build/Makefile.tb
 diff -up tbb-2019_U6/build/Makefile.test.orig tbb-2019_U6/build/Makefile.test
 --- tbb-2019_U6/build/Makefile.test.orig	2019-05-08 08:30:03.448531949 -0600
 +++ tbb-2019_U6/build/Makefile.test	2019-05-08 08:31:48.190498336 -0600
-@@ -266,7 +266,7 @@ test_tbb_plain: $(TEST_PREREQUISITE) $(T
+@@ -275,7 +275,7 @@ test_tbb_plain: $(TEST_PREREQUISITE) $(T
  
  
  # For deprecated files, we don't mind warnings etc., thus compilation rules are most relaxed

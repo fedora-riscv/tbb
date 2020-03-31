@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: 2020.1
-Release: 2%{?dist}
+Version: 2020.2
+Release: 1%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -17,7 +17,7 @@ Source8: tbbmalloc_proxy.pc
 Patch0: tbb-2019-dont-snip-Wall.patch
 
 # Make attributes of aliases match those on the aliased function.
-Patch1: tbb-2019-attributes.patch
+Patch1: tbb-2020-attributes.patch
 
 # Fix test-thread-monitor, which had multiple bugs that could (and did, on
 # ppc64le) result in a hang.
@@ -76,7 +76,7 @@ Python 3 TBB module.
 
 
 %prep
-%autosetup -p1
+%autosetup -p1 -n oneTBB-%{version}
 
 # For repeatable builds, don't query the hostname or architecture
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
@@ -195,6 +195,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Tue Mar 31 2020 Jerry James <loganjerry@gmail.com> - 2020.2-1
+- Rebase to version 2020.2
+
 * Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2020.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
