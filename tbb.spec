@@ -95,8 +95,17 @@ sed -i 's,env python,python3,' python/TBB.py python/tbb/__*.py
 sed -i '/^#!/d' python/tbb/{pool,test}.py
 
 %build
+compiler=""
+if [[ %{__cc} == *"gcc"* ]]; then
+    compiler="gcc"
+elif [[ %{__cc} == *"clang"* ]]; then
+    compiler="clang"
+else
+    compiler="%{__cc}"
+fi
+
 make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
-    compiler=%{__cc} \
+    compiler=${compiler} \
     CXXFLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
@@ -109,7 +118,7 @@ done
 . build/obj_release/tbbvars.sh
 pushd python
 make %{?_smp_mflags} -C rml stdver=c++14 \
-    compiler=%{__cc} \
+    compiler=${compiler} \
     CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
 cp -p rml/libirml.so* .
