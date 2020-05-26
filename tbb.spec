@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -206,6 +206,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 2020.2-3
+- Rebuilt for Python 3.9
+
 * Mon Apr 27 2020 Timm Baeder <tbaeder@redhat.com> - 2020.2-2
 - Pass the compiler to when building
 - Update the tbb-2019-test-thread-monitor.patch to use std::atomic
