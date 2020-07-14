@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -103,7 +103,7 @@ else
     compiler="%{__cc}"
 fi
 
-make %{?_smp_mflags} tbb_build_prefix=obj stdver=c++14 \
+%make_build tbb_build_prefix=obj stdver=c++14 \
     compiler=${compiler} \
     CXXFLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
@@ -116,7 +116,7 @@ done
 # Build for python 3
 . build/obj_release/tbbvars.sh
 pushd python
-make %{?_smp_mflags} -C rml stdver=c++14 \
+%make_build -C rml stdver=c++14 \
     compiler=${compiler} \
     CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
@@ -205,6 +205,10 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Tue Jul 14 2020 Tom Stellard <tstellar@redhat.com> - 2020.2-4
+- Use make macros
+- https://fedoraproject.org/wiki/Changes/UseMakeBuildInstallMacro
+
 * Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 2020.2-3
 - Rebuilt for Python 3.9
 
