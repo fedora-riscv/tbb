@@ -69,7 +69,6 @@ C++ library.
 
 %package -n python3-%{name}
 Summary: Python 3 TBB module
-%{?python_provide:%python_provide python3-%{name}}
 
 %description -n python3-%{name}
 Python 3 TBB module.
