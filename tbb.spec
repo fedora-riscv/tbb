@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
-Version: 2020.2
-Release: 4%{?dist}
+Version: 2020.3
+Release: 1%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -205,6 +205,9 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Mon Jul 27 2020 Jerry James <loganjerry@gmail.com> - 2020.3-1
+- Rebase to version 2020.3
+
 * Tue Jul 14 2020 Tom Stellard <tstellar@redhat.com> - 2020.2-4
 - Use make macros
 - https://fedoraproject.org/wiki/Changes/UseMakeBuildInstallMacro
