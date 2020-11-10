@@ -33,6 +33,7 @@ Patch4: tbb-2019-fetchadd4.patch
 
 BuildRequires: doxygen
 BuildRequires: gcc-c++
+BuildRequires: make
 BuildRequires: python3-devel
 BuildRequires: swig
 
@@ -51,7 +52,6 @@ maintenance is required as more processor cores become available.
 %package devel
 Summary: The Threading Building Blocks C++ headers and shared development libraries
 Requires: %{name}%{?_isa} = %{version}-%{release}
-Requires: cmake-filesystem%{?_isa}
 
 %description devel
 Header files and shared object symlinks for the Threading Building
