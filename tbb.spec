@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -27,10 +27,7 @@ Patch2: tbb-2019-test-thread-monitor.patch
 # than 2 threads will be available to use it.
 Patch3: tbb-2019-test-task-scheduler-init.patch
 
-# Fix compilation on aarch64 and s390x.  See
-# https://github.com/intel/tbb/issues/186
-Patch4: tbb-2019-fetchadd4.patch
-
+BuildRequires: cmake
 BuildRequires: doxygen
 BuildRequires: gcc-c++
 BuildRequires: make
@@ -81,11 +78,8 @@ Python 3 TBB module.
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
-# Do not assume the RTM instructions are available.
 # Insert --as-needed before the libraries to be linked.
-sed -e 's/-mrtm//' \
-    -e "s/-fPIC/& -Wl,--as-needed/" \
-    -i build/linux.gcc.inc
+sed -i "s/-fPIC/& -Wl,--as-needed/" build/linux.gcc.inc
 
 # Invoke the right python binary directly
 sed -i 's,env python,python3,' python/TBB.py python/tbb/__*.py
@@ -105,7 +99,7 @@ fi
 
 %make_build tbb_build_prefix=obj stdver=c++14 \
     compiler=${compiler} \
-    CXXFLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
+    CXXFLAGS="%{optflags} -DUSE_PTHREAD" \
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
@@ -118,7 +112,7 @@ done
 pushd python
 %make_build -C rml stdver=c++14 \
     compiler=${compiler} \
-    CPLUS_FLAGS="%{optflags} -DDO_ITT_NOTIFY -DUSE_PTHREAD" \
+    CPLUS_FLAGS="%{optflags} -DUSE_PTHREAD" \
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
 cp -p rml/libirml.so* .
 %py3_build
@@ -175,8 +169,9 @@ popd
 
 # Install the cmake files
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/cmake
-cp -a cmake $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}
-rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
+cmake -DTBB_ROOT=$RPM_BUILD_ROOT%{_prefix} -DTBB_OS=Linux \
+  -P cmake/tbb_config_generator.cmake
+mv $RPM_BUILD_ROOT%{_prefix}/cmake $RPM_BUILD_ROOT%{_libdir}/cmake/TBB
 
 %files
 %doc doc/Release_Notes.txt README.md
@@ -191,7 +186,7 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{_includedir}/rml/
 %{_includedir}/tbb/
 %{_libdir}/*.so
-%{_libdir}/cmake/tbb/
+%{_libdir}/cmake/TBB/
 %{_libdir}/pkgconfig/*.pc
 
 %files doc
@@ -205,6 +200,12 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu Feb 18 2021 Jerry James <loganjerry@gmail.com> - 2020.3-4
+- Fix cmake file installation (bz 1930389)
+- Allow use of RTM instructions when available
+- At upstream's suggestion, do not force ITT_NOTIFY support
+- Drop -fetchadd64 patch, only needed for forced ITT_NOTIFY support
+
 * Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2020.3-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
