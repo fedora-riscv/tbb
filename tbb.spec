@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -31,6 +31,7 @@ Patch3: tbb-2019-test-task-scheduler-init.patch
 # https://github.com/intel/tbb/issues/186
 Patch4: tbb-2019-fetchadd4.patch
 
+BuildRequires: cmake
 BuildRequires: doxygen
 BuildRequires: gcc-c++
 BuildRequires: python3-devel
@@ -82,11 +83,8 @@ Python 3 TBB module.
 sed -i 's/"`hostname -s`" ("`uname -m`"/fedorabuild (%{_arch}/' \
     build/version_info_linux.sh
 
-# Do not assume the RTM instructions are available.
 # Insert --as-needed before the libraries to be linked.
-sed -e 's/-mrtm//' \
-    -e "s/-fPIC/& -Wl,--as-needed/" \
-    -i build/linux.gcc.inc
+sed -i "s/-fPIC/& -Wl,--as-needed/" build/linux.gcc.inc
 
 # Invoke the right python binary directly
 sed -i 's,env python,python3,' python/TBB.py python/tbb/__*.py
@@ -165,8 +163,9 @@ popd
 
 # Install the cmake files
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/cmake
-cp -a cmake $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}
-rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
+cmake -DTBB_ROOT=$RPM_BUILD_ROOT%{_prefix} -DTBB_OS=Linux \
+  -P cmake/tbb_config_generator.cmake
+mv $RPM_BUILD_ROOT%{_prefix}/cmake $RPM_BUILD_ROOT%{_libdir}/cmake/TBB
 
 %files
 %doc doc/Release_Notes.txt README.md
@@ -181,7 +180,7 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{_includedir}/rml/
 %{_includedir}/tbb/
 %{_libdir}/*.so
-%{_libdir}/cmake/tbb/
+%{_libdir}/cmake/TBB/
 %{_libdir}/pkgconfig/*.pc
 
 %files doc
@@ -195,6 +194,10 @@ rm $RPM_BUILD_ROOT%{_libdir}/cmake/%{name}/README.rst
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Fri Feb 19 2021 Jerry James <loganjerry@gmail.com> - 2020.2-2
+- Fix cmake file installation (bz 1930389)
+- Allow use of RTM instructions when available
+
 * Tue Mar 31 2020 Jerry James <loganjerry@gmail.com> - 2020.2-1
 - Rebase to version 2020.2
 
