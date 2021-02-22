@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -168,10 +168,11 @@ ln -s libirml.so.1 $RPM_BUILD_ROOT%{_libdir}/libirml.so
 popd
 
 # Install the cmake files
-mkdir -p $RPM_BUILD_ROOT%{_libdir}/cmake
-cmake -DTBB_ROOT=$RPM_BUILD_ROOT%{_prefix} -DTBB_OS=Linux \
-  -P cmake/tbb_config_generator.cmake
-mv $RPM_BUILD_ROOT%{_prefix}/cmake $RPM_BUILD_ROOT%{_libdir}/cmake/TBB
+cmake \
+  -DINSTALL_DIR=$RPM_BUILD_ROOT%{_libdir}/cmake/TBB \
+  -DSYSTEM_NAME=Linux \
+  -DLIB_REL_PATH=../.. \
+  -P cmake/tbb_config_installer.cmake
 
 %files
 %doc doc/Release_Notes.txt README.md
@@ -200,6 +201,9 @@ mv $RPM_BUILD_ROOT%{_prefix}/cmake $RPM_BUILD_ROOT%{_libdir}/cmake/TBB
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Mon Feb 22 2021 Jerry James <loganjerry@gmail.com> - 2020.3-5
+- Fix cmake file installation some more (bz 1930389)
+
 * Thu Feb 18 2021 Jerry James <loganjerry@gmail.com> - 2020.3-4
 - Fix cmake file installation (bz 1930389)
 - Allow use of RTM instructions when available
