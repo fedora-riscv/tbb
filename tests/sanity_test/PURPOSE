@@ -1,0 +1,7 @@
+PURPOSE of /tools/tbb/Sanity/upstream
+Description: Test for package tbb that tests the whole library
+Author: Filip Holec <fholec@redhat.com>
+Bug summary: [RFE] Provide tbb (dependency of suitesparse, SciPy)
+Bugzilla link: https://bugzilla.redhat.com/show_bug.cgi?id=844976
+
+Test for package tbb that tests the whole library

@@ -1,0 +1,19 @@
+summary: Test for package tbb that tests the whole library
+description: |
+    Bug summary: [RFE] Provide tbb (dependency of suitesparse, SciPy)
+    Bugzilla link: https://bugzilla.redhat.com/show_bug.cgi?id=844976
+
+    Test for package tbb that tests the whole library
+contact: Filip Holec <fholec@redhat.com>
+component:
+- tbb
+test: ./runtest.sh
+framework: beakerlib
+recommend:
+- tbb
+- tbb-devel
+- rpm-build
+- gcc-c++
+duration: 5m
+extra-summary: /tools/tbb/Sanity/upstream
+extra-task: /tools/tbb/Sanity/upstream
