@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -26,6 +26,10 @@ Patch2: tbb-2019-test-thread-monitor.patch
 # Fix a test that builds a 4-thread barrier, but cannot guarantee that more
 # than 2 threads will be available to use it.
 Patch3: tbb-2019-test-task-scheduler-init.patch
+
+# Fix ABI break resulting from tbb::empty_task being removed from libtbb.so's
+# exported symbols
+Patch4: tbb-mark-empty_task-execute-with-gnu-used.patch
 
 BuildRequires: cmake
 BuildRequires: doxygen
@@ -201,6 +205,9 @@ cmake \
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu Jun  3 2021 Thomas Rodgers <trodgers@redhat.com> - 2020.3-6
+- Fix ABI regression in tbb::empty_task caused by switch to LTO
+
 * Mon Feb 22 2021 Jerry James <loganjerry@gmail.com> - 2020.3-5
 - Fix cmake file installation some more (bz 1930389)
 
