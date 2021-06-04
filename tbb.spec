@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -205,6 +205,9 @@ cmake \
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2020.3-7
+- Rebuilt for Python 3.10
+
 * Thu Jun  3 2021 Thomas Rodgers <trodgers@redhat.com> - 2020.3-6
 - Fix ABI regression in tbb::empty_task caused by switch to LTO
 
