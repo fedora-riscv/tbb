@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -205,6 +205,9 @@ cmake \
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Wed Jun 09 2021 Thomas Rodgers <trodgers@redhat.com> - 2020.3-8
+- Merge change to remove baseos-qe.koji-build.scratch-build.validation ahajkova
+
 * Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2020.3-7
 - Rebuilt for Python 3.10
 
