@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 12%{?dist}
+Release: 13%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -30,6 +30,10 @@ Patch3: tbb-2019-test-task-scheduler-init.patch
 # Fix ABI break resulting from tbb::empty_task being removed from libtbb.so's
 # exported symbols
 Patch4: tbb-mark-empty_task-execute-with-gnu-used.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=2161412
+# https://github.com/oneapi-src/oneTBB/pull/833
+Patch5: tbb-2020-task-namespace.patch
 
 BuildRequires: cmake
 BuildRequires: doxygen
@@ -205,6 +209,9 @@ cmake \
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu Feb 16 2023 Jonathan Wakely <jwakely@redhat.com> - 2020.3-13
+- Fix build failure with GCC13 (bz 2161412)
+
 * Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2020.3-12
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
