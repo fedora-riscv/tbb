@@ -3,4 +3,4 @@ discover:
     how: fmf
     directory: tests
 execute:
-    how: beakerlib
+    how: tmt
