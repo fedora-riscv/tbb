@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 13%{?dist}
+Release: 13.rv64%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -108,7 +108,11 @@ fi
 %make_build tbb_build_prefix=obj stdver=c++14 \
     compiler=${compiler} \
     CXXFLAGS="%{optflags} -DUSE_PTHREAD" \
+%ifarch riscv64
+    LDFLAGS="$RPM_LD_FLAGS -pthread"
+%else
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
+%endif
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
@@ -121,7 +125,11 @@ pushd python
 %make_build -C rml stdver=c++14 \
     compiler=${compiler} \
     CPLUS_FLAGS="%{optflags} -DUSE_PTHREAD" \
+%ifarch riscv64
+    LDFLAGS="$RPM_LD_FLAGS -pthread"
+%else
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
+%endif
 cp -p rml/libirml.so* .
 %py3_build
 popd
@@ -209,6 +217,9 @@ cmake \
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Thu Feb 23 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 2020.3-13.rv64
+- Fix build on riscv64.
+
 * Thu Feb 16 2023 Jonathan Wakely <jwakely@redhat.com> - 2020.3-13
 - Fix build failure with GCC13 (bz 2161412)
 
