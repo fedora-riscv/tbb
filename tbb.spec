@@ -1,7 +1,7 @@
 Name:    tbb
 Summary: The Threading Building Blocks library abstracts low-level threading details
 Version: 2020.3
-Release: 16%{?dist}
+Release: 16.rv64%{?dist}
 License: ASL 2.0
 URL:     http://threadingbuildingblocks.org/
 
@@ -110,7 +110,11 @@ fi
 %make_build tbb_build_prefix=obj stdver=c++14 \
     compiler=${compiler} \
     CXXFLAGS="%{optflags} -DUSE_PTHREAD" \
+%ifarch riscv64
+    LDFLAGS="$RPM_LD_FLAGS -pthread"
+%else
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
+%endif
 for file in %{SOURCE6} %{SOURCE7} %{SOURCE8}; do
     base=$(basename ${file})
     sed 's/_FEDORA_VERSION/%{version}/' ${file} > ${base}
@@ -123,7 +127,11 @@ pushd python
 %make_build -C rml stdver=c++14 \
     compiler=${compiler} \
     CPLUS_FLAGS="%{optflags} -DUSE_PTHREAD" \
+%ifarch riscv64
+    LDFLAGS="$RPM_LD_FLAGS -pthread"
+%else
     LDFLAGS="$RPM_LD_FLAGS -lpthread"
+%endif
 cp -p rml/libirml.so* .
 %py3_build
 popd
@@ -211,6 +219,9 @@ cmake \
 %{python3_sitearch}/__pycache__/TBB*
 
 %changelog
+* Sat Jul 08 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 2020.3-16.rv64
+- Cherry-pick patches for riscv64 Fedora 38 rebuild.
+
 * Tue Feb 21 2023 Jonathan Wakely <jwakely@redhat.com> - 2020.3-16
 - Add versioned Requires: to python module
 
@@ -219,6 +230,9 @@ cmake \
 
 * Mon Jan 16 2023 Thomas Rodgers <trodgers@redhat.com> - 2020.3-14
 - Fix build failure with GCC13 (bz 2161412)
+
+* Thu Feb 23 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 2020.3-13.rv64
+- Fix build on riscv64.
 
 * Wed Jan 11 2023 Thomas Rodgers <trodgers@redhat.com> - 2020.3-13
 - Fix build failure with Python 3.12.0 (bz 2154975)
